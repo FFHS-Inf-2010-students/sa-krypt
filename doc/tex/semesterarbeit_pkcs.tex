@@ -43,7 +43,7 @@
     pdftitle = {Semesterarbeit Kryptographie - Gruppenarbeit PKCS},
     pdfauthor = {Aregger Thomas, Gutknecht Jürg, Dünki Marc, Daniel David},
     pdfsubject = {Semesterarbeit Kryptographie - Gruppenarbeit PKCS},
-    pdfkeywords = {Kryptographie PKCS Semesterarbeit},
+    pdfkeywords = {Kryptographie PKCS Semesterarbeit Gruppenarbeit},
     % hidelinks
     colorlinks = true,
     linkcolor = blue,
@@ -59,24 +59,250 @@
     Aregger Thomas \small{thomas.aregger@students.ffhs.ch}\\
     Dünki Marc \small{marc.duenki@students.ffhs.ch}\\
     Gutknecht Jürg \small{juerg.gutknecht@students.ffhs.ch}\\
-    Daniel David \small{david.daniel@students.ffhs.ch}}
+    Daniel David \small{david.daniel@students.ffhs.ch}
+}
 
 \date{\today}
 
 \begin{document}
 
 \maketitle
-% \tableofcontents
+\tableofcontents
 
-\section{ASN.1}
+\section{Einleitung}
+Dieses Dokument liefert einen Überblick über das Themengebiet der Public-Key Cryptography
+Standards und entstand als Teil der Semesterarbeit des Moduls Kryptologie bei Herrn Josef
+Schuler.
 
-\subsection{Verwendete Namen und Bezeichnungen}
+\subsection{Gruppe}
+Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
+\begin{itemize}
+   \item Thomas Aregger
+   \item David Daniel
+   \item Marc Dünki (Projektleiter)
+   \item Jürg Gutknecht
+\end{itemize}
+
+\subsection{Vorgehensweise}
+
+\begin{table}[ht]
+   \centering
+   \begin{tabular}{|l|p{8.6cm}|} \hline
+      \textbf{Datum} & \textbf{Fortschritt} \\\hline
+      7.9.2013 & Gruppenbildung \\\hline
+      8.9.2013 - 4.10.2013 & Individuelles Erarbeiten der Aufgabenstellung \\\hline
+      4.10.2013 & Aufteilen der Themen innerhalb der Gruppe \\\hline
+      4.10.2013 - 28.12.2013 & Individuelles Bearbeiten der Inhalte gemäss
+         Themenverteilung \\\hline
+      28.12.2013 & Besprechen des Fortschritts \\\hline
+      28.12.2013 - 4.1.2014 & Individuelles Finalisieren der Inhalte gemäss
+         Themenverteilung \\\hline
+      4.1.2014 & Verteilen der Aufgaben zum Abschliessen der Arbeit \\\hline
+      4.1.2014 - 9.1.2014 & Abschliessen der Arbeit \\\hline
+         & Abgabe der Arbeit \\\hline
+   \end{tabular}
+   \caption{Vorgehensweise}
+   \label{tab:vorgehensweise}
+\end{table}
+
+\subsection{Arbeitsteilung}
+
+\subsubsection{Verteilung der Themen}
+\begin{table}[ht]
+   \centering
+   \begin{tabular}{|c|l|} \hline
+      \textbf{PKCS\#} & \textbf{Person} \\\hline
+      1 & Thomas Aregger \\\hline
+      3 & Marc Dünki \\\hline
+      5 & Thomas Aregger \\\hline
+      6 & Jürg Gutknecht \\\hline
+      7 & David Daniel \\\hline
+      8 & Thomas Aregger \\\hline
+      9 & David Daniel \\\hline
+      10 & Jürg Gutknecht \\\hline
+      11 & Jürg Gutknecht \\\hline
+      12 & Marc Dünki \\\hline
+      13 & David Daniel \\\hline
+      15 & Marc Dünkis \\\hline
+   \end{tabular}
+   \caption{Verteilung der Themen}
+   \label{tab:arbeitsteilung}
+\end{table}
+
+\FloatBarrier
+
+\subsubsection{Weitere Aufgaben}
+\begin{table}[ht]
+   \centering
+   \begin{tabular}{|p{8cm}|l|} \hline
+      \textbf{Aufgabe} & \textbf{Person} \\\hline
+      Zusammenführung der Beiträge in einem Dokument & David Daniel \\\hline
+      Zusammenfassung der Beiträge in einer Präsentation & \\\hline
+      Abgabe der Aufgabe & \\\hline
+   \end{tabular}
+   \caption{Verteilung weiterer Aufgaben}
+   \label{tab:weitere-aufgaben}
+\end{table}
+
+\section{Public-Key Cryptography Standards}
+Die Public Key Cryptography Standards (PKCS) sind eine von RSA Laboratories~\cite{rsa-lab}
+seit den 1990er- Jahren veröffentlichte Reihe an Standards zum Themengebiet der
+asymmetrischen Kryptographie (Public-Key Kryptographie).
+
+Die Gruppe der PKCS besteht aus den nachfolgend aufgelisteten Standards, welche in diesem
+Kapitel detailliert betrachtet werden.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|l|} \hline
+        \textbf{PKCS \#} & \textbf{Titel} \\\hline
+        1 & RSA Cryptography Standard \\\hline
+        3 & Diffie-Hellman Key-Agreement Standard \\\hline
+        5 & Password-Based Cryptography Standard \\\hline
+        6 & Extended-Certificate Syntax Standard \\\hline
+        7 & Cryptographic Message Syntax Standard \\\hline
+        8 & Private-Key Information Syntax Standard \\\hline
+        9 & Selected Object Classes and Attribute Types \\\hline
+        10 & Certification Request Syntax Standard \\\hline
+        11 & Cryptographic Token Interface Standard \\\hline
+        12 & Personal Information Exchange Syntax \\\hline
+        13 & Elliptic Curve Cryptography Standard \\\hline
+        14 & Pseudo Random Number Generation \\\hline
+        15 & Cryptographic Token Information Syntax Standard \\\hline
+    \end{tabular}
+    \caption{Übersicht der PKCS}
+    \label{tab:pkcs-overview}
+\end{table}
+
+\FloatBarrier
+
+Die PKCS \#2 und \#4 wurden in den PKCS \#1 überführt und sind nicht mehr eigener Bestandteil
+der PKCS-Familie~\cite[S.1]{kal91}.
+
+PKCS \#14 befindet sich zur Zeit in Entwicklung, wird auf den PKCS-Seiten der RSA
+Laboratories~\cite{pkcs-standards} nicht erwähnt und wird hier ebenfalls nicht genauer
+betrachtet.
+
+\subsection{PKCS \#1: RSA Cryptography Standard}
+
+\subsection{PKCS \#3: Diffie-Hellman Key-Agreement Standard}
+
+\subsubsection{Einleitung}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|} \hline
+        Aktuelle Version des Standards & 1.4 \\\hline
+        Datum & Revised November 1, 1993 \\\hline
+        Seitenzahl & 8 \\\hline
+    \end{tabular}
+    % \caption{<+Caption text+>}
+    % \label{tab:<+label+>}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+
+\begin{quotation}
+    \textit{This standard describes a method for implementing Diffie-Hellman key
+    agreement. The intended application of this standard is in protocols for establishing
+    secure communications.}
+\end{quotation}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Scope}
+Das Diffie-Hellmann-Schlüsselaustausch Protokoll wird in der Kryptografie verwendet, um
+zwischen zwei Kommunikationspartner einen geheimen Schlüssel zu erzeugen. Dieser wird dann
+vornehmlich als geheimer Schlüssel für synchrone Verschlüsselungsmechanismen verwendet.
+Mit diesem Protokoll soll eine grosse Problematik der synchronen Verschlüsselung, nämlich
+der des Austauschs des geheimen Schlüssels, gelöst werden. Da es sich beim Diffie-Hellann
+um ein Protokoll handelt, welches sich auf das Problem des diskreten Logarithmus stützt,
+kann man für den Einsatz zum Beispiel Elliptische Kurven (ECC) verwenden.
+
+\paragraph{Sicherheit}
+Beide Kommunikationspartner senden sich eine Nachricht über ein nicht gesichertes Netz zu
+(Internet). Falls nun ein Angreifer diese beiden Nachrichten abfängt und aus diesen beiden
+Nachrichten den geheimen Schlüssel generieren möchte, muss er das Diffie-Hellmann-Problem
+lösen. Von diesem wird jedoch angenommen, dass es praktisch unlösbar ist. Allerdings,
+sobald ein Angreifer diese Nachrichten verändern kann (Man-in-the-Middle-Attack), ist der
+Diffie- Hellmann-Schlüsselaustausch nicht mehr sicher.  Das impliziert, dass dieses
+Protokoll mit Mechanismen der Authentiziät kombiniert werden sollte, welche dann
+sicherstellen, dass Nachrichten nicht umbemerkt verändert werden können. Alternativ kann
+auch ein Zero-Knowledge- Beweis zum Einsatz kommen, wie z.B. das Fiat-Shamir-Verfahren.
+Dieses Verfahren ermöglicht es einem Kommunikationspartner zu beweisen, dass er das
+Geheimnis kennt, ohne es aber zu verraten.
+
+\paragraph{Ablauf Schlüsselerzeugung}
+
+\subparagraph{Generierung der Parameter}
+Eine zentrale Authorität wählt eine ungerade Primzahl "`p"'. Ebenfalls wird eine
+Primitivwurzel "`g"' gewählt, welche erfüllt dass, 0 < g < p gilt. Bei einigen Methoden
+hängt der Aufwand für das berechnen des diskreten Logarithmus vo der länge der Primzahl
+ab. Für andere ist die länge der privaten Geheimzahl ausschlaggebend. Deshalb kann gerade
+für dieses Verfahren, durch die zentrale Autorität eine maximale Länge der privaten
+Geheimzahl vorgegeben werden. Dies ermöglicht die Zeit für das Berechnen relativ klein zu
+halten, während trotzdem ein gewisses Niveau von Sicherheit gewährleistet werden kann.
+
+\subparagraph{Vorgehen zur Schlüsselerzeugung}
+Der Ablauf der Schlüsselerzeugen teilt sich in zwei Phasen ein, wobei beide Phasen in drei
+Schritten ablaufen. Beide Kommunikationspartner durchlaufen diese beiden Phasen gleichzeitig.
+Für die erste Phase nehmen beide Kommunikationspartner die öffentlich bekannten Zahlen
+"`p"' (Primzahl) und "`g"' (Primitivwurzel) als Input.
+
+\subparagraph{Phase 1}
 \begin{description}
-    \item[Object identifier] Eine Folge von Ganzzahlen welche ein spezifisches Objekt
-        identifiziert.
+    \item[Schritt 1] Erzeugen der privaten Geheimzahl
+        \begin{itemize}
+            \item Es wird eine natürliche Zahl "`x"' gewählt, so dass $0 < x < p - 1$ gilt
+        \end{itemize}
+    \item[Schritt 2] Potenzieren
+        \begin{itemize}
+            \item Es wird ein öffentlicher int Wert "`y"' errechnet mit: $y = g^x \mod
+                p$, $0 < y < p$
+        \end{itemize}
+    \item[Schritt 3] Konvertierung von Integer-to-octet-string
+        \begin{itemize}
+            \item Der öffentliche int Wert "`y"' wird in ein octet-string PV (Public
+                Value) mit Länge "`k"' gewandelt mit $y = \sum_{i=1}^k 2^{8(k-i) PV_i}$
+        \end{itemize}
 \end{description}
 
-\section{PKCS 7 - Standard zur Syntax kryptographischer Nachrichten}
+Nach der ersten Phase tauschen die beiden Kommunikationspartner ihren öffentlichen Wert
+(PV) aus, welcher soeben errechnet wurde. Für die zweite Phase nehmen beide
+Kommunikationspartner den soeben erhaltenen Public Value PV' des Kommunikationspartners,
+wie auch die eigene private Geheimzahl als Input.
+
+\subparagraph{Phase 2}
+\begin{description}
+    \item[Schritt 1] Konvertierung von Octet-string-to-integer
+        \begin{itemize}
+            \item Der öffentliche octet-string PV' des Kommunikationspartners wird
+                umgewandelt in ein int-Wert "`y"' mit: $y = \sum_{i=1}^k 2^{8(k-i) PV_i'}$
+        \end{itemize}
+    \item[Schritt 2] Potenzieren
+        \begin{itemize}
+            \item Die errechnete Zahl "`y"' wird nun mit der eigentlichen Geheimzahl "`x"'
+                potenziert und mod "`p"' gerechnet: $Z = (y')^x \mod p$, $0 < z < p$.
+        \end{itemize}
+        Die daraus erzeugte Zahl "`z"' ist nur der gemeinsame Geheimschlüssel
+    \item[Schritt 3] Konvertierung von Integer-to-octet-string
+        \begin{itemize}
+            \item Der int-Wert "`z"' wird nun noch in einen octet-string SK(Secret Key)
+                umgewandelt: $z = \sum_{i=1}^k 2^{8(k-i)SK_i}$
+        \end{itemize}
+\end{description}
+
+Der in der zweiten Phase von beiden erzeugte Octet-string, auch bekannt als secret key
+(SK), kann nun von beiden für das Verschlüsseln von Nachrichten angewendet werden.
+
+\subsubsection{Vergleich zur Vorlesung Krypt}
+Die im Vorgehen mehrfach vollzogene Umwandlung von Integer in String und umgekehrt, wurde
+in unseren Vorlesungen nicht betrachtet. Dieser Schritt ist jedoch für die Theorie nicht
+zentral und lediglich wichtig für eine konkrete Implementierung in der Praxis von DH.
+Zudem werden in diesem PKCS die Domain Werte, also Primzahl p sowie eine Primitivwurzel g,
+nicht von den beiden Kommunikationsparteien sondern von einer zentralen Authorität
+gewählt.
+
+\subsection{PKCS 7 - Standard zur Syntax kryptographischer Nachrichten}
 
 \begin{description}
     \item[PKCS \#7] definiert eine generelle Syntax zur Beschreibung von Inhalten welche in
@@ -93,7 +319,7 @@ Folgendes sind Beispiele von Anwendungen, welche dieser Standard adressiert:
     \item Verschlüsselung digitaler Inhalte
 \end{itemize}
 
-\subsection{Aufbau}
+\subsubsection{Aufbau}
 
 Es werden generell zwischen zwei Klassen von Inhalts-Typen unterschieden:
 \begin{description}
@@ -120,7 +346,7 @@ Nur "`data"' gehört zur Klasse "`base"', alle weiteren Typen gehören zur Kateg
 wird auch von dem sogenannten "`inner"' und "`outer"' content gesprochen. Der "`inner"'
 content ist somit der vom "`outer"' content erweiterte Inhalt.
 
-\subsection{Der Inhalt}
+\subsubsection{Der Inhalt}
 
 Der Standard exportiert schliesslich einen Typen \texttt{ContentInfo}, welcher den
 entsprechenden Inhalt zu repräsentieren vermag. Eine Nachricht, ein Element resp. ein
@@ -146,14 +372,14 @@ ContentInfo ::= SEQUENCE {
         werden (wird mittels \texttt{contentType} kommuniziert).
 \end{description}
 
-\subsection{Die Inhalts-Typen}
+\subsubsection{Die Inhalts-Typen}
 
-\subsubsection{Data}
+\paragraph{Data}
 Der data content type ist ein arbiträrer octet string, welcher generell keine interne
 Struktur aufweist (jedoch aufweisen kann) und in Form einer ASCII Zeichenketten betrachtet
 wird. Die genaue Interpretation des Inhaltes wird der Anwendung überlassen.
 
-\subsubsection{Signed-data}
+\paragraph{Signed-data}
 Der signed-data content type besteht aus dem signierten Inhalt eines beliebigen Typs sowie
 verschlüsselter Digests des Inhaltes, welche von einer beliebigen Anzahl Instanzen
 signiert wurden.
@@ -189,7 +415,7 @@ Der Prozess, wie signierter Inhalt erzeugt wird, wird folgendermassen festgehalt
         abgelegt.
 \end{enumerate}
 
-\subsubsection{Enveloped}
+\paragraph{Enveloped}
 Der enveloped-data content type beinhaltet verschlüsselte Daten sowie die verschlüsselten
 Schlüssel für eine beliebige Anzahl Empfänger, womit der Inhalt wieder entschlüsselt
 werden kann. Die Idee ist ein sogenanntes "`Digital Envelope"', dadurch können die
@@ -217,23 +443,23 @@ EncryptedContent ::= OCTET STRING
 \end{verbatim}
 \label{syntax:enveloped}
 
-\subsubsection{Signed and enveloped}
+\paragraph{Signed and enveloped}
 Der signed and enveloped content type kombiniert quasi die signed und die enveloped Typen.
 Im Besonderen wird der genaue Prozess zur Erstellung des entsprechenden Inhaltes genannt
 \cite[S.22]{pkcs7} und der genaue Aufbau des Typs beschrieben \cite[S.23]{pkcs7}.
 
-\subsubsection{Digested}
+\paragraph{Digested}
 Der digested content type beinhaltet einen Inhalt beliebigen Typs sowie einen Message
 Digest dazu. Dies dient grundsätzlich dazu, die Integrität des Inhaltes zu gewährleisten.
 Dieser Inhalt wird daher typischerweise in einen enveloped content type integriert.
 
-\subsubsection{Encrypted}
+\paragraph{Encrypted}
 Der encrypted content type Inhalt enthält selbst keine Empfänger oder Schlüssel. Der Typ
 ist eher dazu gedacht, für lokale Verschlüsselung verwendet zu werden. Der Typ beinhaltet
 lediglich eine Version und den verschlüsselten Inhalt wie er Bestandteil des enveloped
 content type ist (Syntax \ref{syntax:enveloped}, \texttt{EncryptedContentInfo}).
 
-\section{PKCS 9 - Ausgewählte Objektklassen und Attribute}
+\subsection{PKCS 9 - Ausgewählte Objektklassen und Attribute}
 In PKCS\#9 werden einige Objektklassen und Attribute behandelt, welche Bestandteile
 anderer PKCS Dokumente sind und von unterschiedlichen Dokumenten gleichermassen
 referenziert werden.
@@ -245,7 +471,7 @@ ein:
     \item \texttt{naturalPerson}
 \end{itemize}
 
-\subsection{pkcsEntity}
+\subsubsection{pkcsEntity}
 Die \texttt{pcksEntity} Objekt-Klasse ist dazu gedacht, Attribute von beliebigen PKCS
 Entitäten zu beherbergen. Sie wurde für die Verwendung von LDAP basierten
 Verzeichnis-Diensten entwickelt.
@@ -274,7 +500,7 @@ abzulegen.
         Schlüssel, welche in diesem Attribut enthalten sein können.
 \end{description}
 
-\subsection{naturalPerson}
+\subsubsection{naturalPerson}
 Die Objekt-Klasse \texttt{naturalPerson} wurde wie die Klasse \texttt{pkcsEntity} für die
 Verwendung in Verzeichnis-Diensten erstellt. \texttt{naturalPerson} ist dafür gedacht,
 Attribute von natürlichen Personen (Menschen) zu beherbergen.
@@ -328,7 +554,7 @@ Für \texttt{naturalPerson} sind die folgenden Attribute definiert:
         ISO/IEC 9594-6.
 \end{description}
 
-\subsection{Generelle Attribute}
+\subsubsection{Generelle Attribute}
 
 Neben der beiden neu definierten Objekt-Klassen \texttt{pkcsEntity} und
 \texttt{naturalPerson} wird im Besonderen auf einige spezifische Attribute eingegangen.
@@ -374,7 +600,7 @@ Von diesen sollen nun einige genauer betrachtet werden:
 \end{description}
 
 
-\section{PKCS 13 - Elliptische Kurven}
+\subsection{PKCS 13 - Elliptische Kurven}
 
 Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
 vergleichbare Sicherheit zu etablierten Public Key Verfahren mit kleineren Schlüsseln
@@ -410,7 +636,7 @@ PKCS\#13 soll die anderen Standards vervollständigen, ein Profil der anderen St
 PKCS Format liefern und eine Anleitung für die Integration in andere PKCS Anwendungen (wie
 beispielsweise PKCS\#7) bieten.
 
-\subsection{Aktueller Umfang}
+\subsubsection{Aktueller Umfang}
 
 Zurzeit umfasst der Standard Grundlagen der folgenden Bereiche, welche allerdings keine
 konkreten Implementierungen oder Standards nennt. Diese Themen können als Grundlagen der
@@ -436,8 +662,15 @@ Encryption Schemes und Point Representations nennt.
 
 \FloatBarrier
 \appendix
-\renewcommand{\refname}{\section{Bibliographie}}
+\renewcommand{\refname}{\section{Quellen}}
 \begin{thebibliography}{}
+    \bibitem[RSA-Lab]{rsa-lab} RSA Laboratories:
+        \url{http://www.emc.com/domains/rsa/index.htm}, 1.1.2014
+    \bibitem[KAL91]{kal91} Kalinski \& Burton S.: An Overview of the PKCS Standards, 1991
+    \bibitem[PKCS-Standards]{pkcs-standards} RSA Laboratories: PUBLIC-KEY CRYPTOGRAPHY
+        STANDARDS,
+        \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/public-key-cryptography-standards.htm},
+        1.1.2014
     \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS\#7 Cryptographic Message Syntax Standard;
         1993
     \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0: Selected Object Classes and
