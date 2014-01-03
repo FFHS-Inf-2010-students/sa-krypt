@@ -1,0 +1,456 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+\selectlanguage{ngerman}
+\usepackage[T1]{fontenc}
+
+% Math stuff
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% Farben
+\usepackage[usenames,x11names,dvipsnames,rgb]{xcolor}
+\definecolor{grey}{rgb}{0.4,0.4,0.4}
+\definecolor{lightgrey}{rgb}{0.8,0.8,0.8}
+\definecolor{ultralightgrey}{rgb}{0.96,0.96,0.96}
+
+% Grafix
+\usepackage{graphicx}
+
+% TikZ (dot2tex etc.)
+\usepackage{tikz}
+\usetikzlibrary{decorations, arrows, shapes}
+
+% Farben in Tabellen
+\usepackage{colortbl}
+
+% Lange Tabellen
+\usepackage{longtable}
+
+% Gewrappte boxen (können innerhalb f{rame}box's verwendet werden)
+\usepackage{minibox}
+
+% FloatBarrier stellt sicher, dass das Literaturverzeichnis am Ende des
+% Dokuments erscheint.
+\usepackage{placeins}
+
+% Hyperref
+\usepackage{hyperref}
+% Hypersetup
+\hypersetup{
+    pdftitle = {Semesterarbeit Kryptographie - Gruppenarbeit PKCS},
+    pdfauthor = {Aregger Thomas, Gutknecht Jürg, Dünki Marc, Daniel David},
+    pdfsubject = {Semesterarbeit Kryptographie - Gruppenarbeit PKCS},
+    pdfkeywords = {Kryptographie PKCS Semesterarbeit},
+    % hidelinks
+    colorlinks = true,
+    linkcolor = blue,
+    % urlcolor = black
+    urlcolor = Blue,
+    citecolor = grey
+}
+
+\urlstyle{same}
+
+\title{Semesterarbeit Kryptographie - Gruppenarbeit  PKCS}
+\author{
+    Aregger Thomas \small{thomas.aregger@students.ffhs.ch}\\
+    Dünki Marc \small{marc.duenki@students.ffhs.ch}\\
+    Gutknecht Jürg \small{juerg.gutknecht@students.ffhs.ch}\\
+    Daniel David \small{david.daniel@students.ffhs.ch}}
+
+\date{\today}
+
+\begin{document}
+
+\maketitle
+% \tableofcontents
+
+\section{ASN.1}
+
+\subsection{Verwendete Namen und Bezeichnungen}
+\begin{description}
+    \item[Object identifier] Eine Folge von Ganzzahlen welche ein spezifisches Objekt
+        identifiziert.
+\end{description}
+
+\section{PKCS 7 - Standard zur Syntax kryptographischer Nachrichten}
+
+\begin{description}
+    \item[PKCS \#7] definiert eine generelle Syntax zur Beschreibung von Inhalten welche in
+        Verbindung mit kryptographischen Verfahren stehen können, zum Beispiel Signaturen.
+        Die Syntax erlaubt Rekursion, so dass beispielsweise Inhalte signiert werden
+        können, welche zuvor von einer anderen Instanz signiert wurden etc.
+\end{description}
+
+Folgendes sind Beispiele von Anwendungen, welche dieser Standard adressiert:
+\begin{itemize}
+    \item Signieren von digitalen Nachrichten
+    \item Digest (hash) von digitalen Nachrichten
+    \item Authentisierung von Nachrichten (MAC)
+    \item Verschlüsselung digitaler Inhalte
+\end{itemize}
+
+\subsection{Aufbau}
+
+Es werden generell zwischen zwei Klassen von Inhalts-Typen unterschieden:
+\begin{description}
+    \item[base] data enthält "`plain data"', also Daten, welche keine kryptographischen
+        Erweiterungen ("`enhancements"') aufweisen.
+    \item[enhanced] data enthält Inhalt eines bestimmten Typs (evtl. verschlüsselt) und
+        weitere kryptographische Erweiterungen.
+\end{description}
+
+Insgesamt werden vom Standard sechs Inhalts-Typen definiert, weitere könnten in der
+Zukunft hinzu kommen:
+\label{list:content-types}
+\begin{itemize}
+    \item data
+    \item signed data
+    \item enveloped data
+    \item signed-and-enveloped data
+    \item digested data
+    \item encrypted data
+\end{itemize}
+
+Nur "`data"' gehört zur Klasse "`base"', alle weiteren Typen gehören zur Kategorie
+"`enhanced"'. Da die Typen der enhanced Klasse selbst Inhalte anderer Typen beinhalten,
+wird auch von dem sogenannten "`inner"' und "`outer"' content gesprochen. Der "`inner"'
+content ist somit der vom "`outer"' content erweiterte Inhalt.
+
+\subsection{Der Inhalt}
+
+Der Standard exportiert schliesslich einen Typen \texttt{ContentInfo}, welcher den
+entsprechenden Inhalt zu repräsentieren vermag. Eine Nachricht, ein Element resp. ein
+Objekt dieses Standards weist die folgende Syntax auf:
+
+\begin{verbatim}
+ContentInfo ::= SEQUENCE {
+    contentType ContentType,
+    content
+        [0] EXPLICIT ANY DEFINED BY contentType OPTIONAL
+}
+\end{verbatim}
+
+\begin{description}
+    \item[contentType] benennt den Typ des Inhaltes. Es handelt sich um einen Object
+        identifier, welcher den Inhalts-Typen gemäss obiger Liste~\ref{list:content-types}
+        (data, signed data etc.) enthält. Er weist die folgende Syntax auf:
+        \begin{verbatim}
+        ContentType ::= OBJECT IDENTIFIER
+        \end{verbatim}
+    \item[content] ist der Inhalt der Nachricht. Das Feld ist optional und falls es nicht
+        enthalten ist, muss der gewünschte Inhalt anderweitig zur Verfügung gestellt
+        werden (wird mittels \texttt{contentType} kommuniziert).
+\end{description}
+
+\subsection{Die Inhalts-Typen}
+
+\subsubsection{Data}
+Der data content type ist ein arbiträrer octet string, welcher generell keine interne
+Struktur aufweist (jedoch aufweisen kann) und in Form einer ASCII Zeichenketten betrachtet
+wird. Die genaue Interpretation des Inhaltes wird der Anwendung überlassen.
+
+\subsubsection{Signed-data}
+Der signed-data content type besteht aus dem signierten Inhalt eines beliebigen Typs sowie
+verschlüsselter Digests des Inhaltes, welche von einer beliebigen Anzahl Instanzen
+signiert wurden.
+
+Die Syntax des signet-data content type ist folgendermassen gegeben \cite[S.10]{pkcs7}:
+\begin{verbatim}
+SignedData ::= SEQUENCE {
+    version Version,
+    digestAlgorithms DigestAlgorithmIdentifiers,
+    contentInfo ContentInfo,
+    certificates [0] IMPLICIT ExtendedCertificatesAndCertificates
+        OPTIONAL,
+    crls [1] IMPLICIT CertificateRevocationLists OPTIONAL,
+    signerInfos SignerInfos
+}
+DigestAlgorithmIdentifiers ::= SET OF DigestAlgorithmIdentifier
+SignerInfos ::= SET OF SignerInfo
+\end{verbatim}
+
+Der Prozess, wie signierter Inhalt erzeugt wird, wird folgendermassen festgehalten
+\cite[S.10]{pkcs7}:
+\begin{enumerate}
+    \item Pro jede signierende Instanz wird der Message Digest des Inhaltes gemäss dem
+        Algorithmus der signierenden Instanz erstellt.
+    \item Pro signierende Instanz wird mit dessen privatem Schlüssel jeder Message Digest
+        dieser Instanz und dessen zugehörigen Angaben verschlüsselt.
+    \item Pro signierende Instanz werden der verschlüsselte Message Digest und andere
+        Instanz-spezifische Informationen in einem \texttt{SignerInfo} Objekt abgelegt.
+        Die Zertifikate und certificate-revocation Listen werden in diesem Schritt
+        ermittelt.
+    \item Sämtliche Message-Digest Algorithmen und \texttt{SignerInfo} Objekte für alle
+        signierenden Instanzen werden mit dem Inhalt im \texttt{SignedDataValue} Objekt
+        abgelegt.
+\end{enumerate}
+
+\subsubsection{Enveloped}
+Der enveloped-data content type beinhaltet verschlüsselte Daten sowie die verschlüsselten
+Schlüssel für eine beliebige Anzahl Empfänger, womit der Inhalt wieder entschlüsselt
+werden kann. Die Idee ist ein sogenanntes "`Digital Envelope"', dadurch können die
+Vorteile des Public Key Algorithmus mit den Vorzügen der symmetrischen Verschlüsselung
+genutzt werden (hybrid).
+
+Das Element enthält neben einer Version und den verschlüsselten Inhalten eine Menge von
+Empfänger Angaben. Darin werden der verschlüsselte Schlüssel sowie die Angaben über den
+zugrundeliegenden Algorithmus hinterlegt:
+\begin{verbatim}
+EnvelopedData ::= SEQUENCE {
+    version Version,
+    recipientInfos RecipientInfos,
+    encryptedContentInfo EncryptedContentInfo
+}
+RecipientInfos ::= SET OF RecipientInfo
+EncryptedContentInfo ::= SEQUENCE {
+    contentType ContentType,
+    contentEncryptionAlgorithm
+    ContentEncryptionAlgorithmIdentifier,
+    encryptedContent
+    [0] IMPLICIT EncryptedContent OPTIONAL
+}
+EncryptedContent ::= OCTET STRING
+\end{verbatim}
+\label{syntax:enveloped}
+
+\subsubsection{Signed and enveloped}
+Der signed and enveloped content type kombiniert quasi die signed und die enveloped Typen.
+Im Besonderen wird der genaue Prozess zur Erstellung des entsprechenden Inhaltes genannt
+\cite[S.22]{pkcs7} und der genaue Aufbau des Typs beschrieben \cite[S.23]{pkcs7}.
+
+\subsubsection{Digested}
+Der digested content type beinhaltet einen Inhalt beliebigen Typs sowie einen Message
+Digest dazu. Dies dient grundsätzlich dazu, die Integrität des Inhaltes zu gewährleisten.
+Dieser Inhalt wird daher typischerweise in einen enveloped content type integriert.
+
+\subsubsection{Encrypted}
+Der encrypted content type Inhalt enthält selbst keine Empfänger oder Schlüssel. Der Typ
+ist eher dazu gedacht, für lokale Verschlüsselung verwendet zu werden. Der Typ beinhaltet
+lediglich eine Version und den verschlüsselten Inhalt wie er Bestandteil des enveloped
+content type ist (Syntax \ref{syntax:enveloped}, \texttt{EncryptedContentInfo}).
+
+\section{PKCS 9 - Ausgewählte Objektklassen und Attribute}
+In PKCS\#9 werden einige Objektklassen und Attribute behandelt, welche Bestandteile
+anderer PKCS Dokumente sind und von unterschiedlichen Dokumenten gleichermassen
+referenziert werden.
+
+Der Standard führt die folgenden zwei neuen Objekt-Klassen und deren zugehörigen Attribute
+ein:
+\begin{itemize}
+    \item \texttt{pkcsEntity}
+    \item \texttt{naturalPerson}
+\end{itemize}
+
+\subsection{pkcsEntity}
+Die \texttt{pcksEntity} Objekt-Klasse ist dazu gedacht, Attribute von beliebigen PKCS
+Entitäten zu beherbergen. Sie wurde für die Verwendung von LDAP basierten
+Verzeichnis-Diensten entwickelt.
+
+Die Syntax ist folgendermassen gegeben: 
+\begin{verbatim}
+pkcsEntity OBJECT-CLASS ::= {
+    SUBCLASS OF { top }
+    KIND auxiliary
+    MAY CONTAIN { PKCSEntityAttributeSet }
+    ID pkcs-9-oc-pkcsEntity
+}
+\end{verbatim}
+
+Die Klasse sieht eine ID sowie ein optionales Attribut vor. Die folgenden Attribute werden
+allesamt dafür verwendet, die zugehörigen Informationen in einem Verzeichnis-Dienst
+abzulegen.
+\begin{description}
+    \item[pKCS7PDU] Die in PKCS\#7 definierten geschützten Daten (enveloped, signed etc.)
+        werden mit diesem Attribut verwendet.
+    \item[userPKCS12] In PKCS\#12 wird ein Format für den Austausch von Angaben über die
+        persönliche Identität definiert. Dieses Attribut kann hierfür verwendet werden.
+    \item[pKCS15Token] In PKCS\#15 wird ein Format für kryptographische Tokens definiert,
+        welche in diesem Attribut abgelegt werden können.
+    \item[encryptedPrivateKeyInfo] PCKS\#8 definiert ein Format für verschlüsselte private
+        Schlüssel, welche in diesem Attribut enthalten sein können.
+\end{description}
+
+\subsection{naturalPerson}
+Die Objekt-Klasse \texttt{naturalPerson} wurde wie die Klasse \texttt{pkcsEntity} für die
+Verwendung in Verzeichnis-Diensten erstellt. \texttt{naturalPerson} ist dafür gedacht,
+Attribute von natürlichen Personen (Menschen) zu beherbergen.
+
+Die Syntax und der Aufbau ähneln stark derjenigen der \texttt{pkcsEntity}:
+\begin{verbatim}
+naturalPerson OBJECT-CLASS ::= {
+    SUBCLASS OF { top }
+    KIND auxilary
+    MAY CONTAIN { NaturalPersonAttributeSet }
+    ID pkcs-9-oc-naturalPerson
+}
+\end{verbatim}
+
+Für \texttt{naturalPerson} sind die folgenden Attribute definiert:
+\begin{description}
+    \item[emailAddress] spezifiziert eine oder mehrere E-Mail Adressen in Form einer
+        unstrukturierten ASCII Zeichenkette. Es liegt an der Anwendung, die Adressen zu
+        interpretieren. Speziell an diesem Element ist die \texttt{EQUALITY MATCHING RULE}
+        als \texttt{pkcs9CaseIgnoreMatch}, welche besagt, dass falls zwei E-Mail Adressen
+        miteinander verglichen werden, wird die Gross-Kleinschreibung ignoriert.
+    \item[unstructuredName] spezifiziert den oder die Namen eines Subjektes als
+        unstrukturierte ASCII Zeichenkette. Ein unstrukturierter Name kann mehrere
+        Attribut-Werte enthalten, es liegt auch hier an der Anwendung, den Namen zu
+        interpretieren. Wie bei der E-Mail Adresse wird beim Vergleich zweier
+        unstrukturierter Adressen die Gross-Kleinschreibung ignoriert.
+    \item[unstructuredAddress] nennt die Adresse des Subjektes. Auch hierbei handelt es
+        sich um vollkommen unstrukturierten Inhalt. Auch hier gilt, dass beim Vergleich
+        die Gross-Kleinschreibung ignoriert wird. Wie der Name kann auch die Adresse
+        mehrere Attribut-Werte enthalten und es liegt an der Anwendung, diesen Inhalt zu
+        interpretieren.
+    \item[dateOfBirth] wird in Form der \texttt{GeneralizedTime} geführt. Es wird ferner
+        verlangt, dass dieses Attribut maximal einmal vorkommt (\texttt{SINGLE VALUE
+        TRUE}).
+    \item[placeOfBirth] darf wie \texttt{dateOfBirth} maximal einmal vorkommen und nennt
+        in einem unstrukturierten Text den Geburtsort des Subjektes. Der Geburtsort wird
+        allerdings unter Berücksichtigung der Gross-Kleinschreibung behandelt.
+    \item[gender] nennt das Geschlecht mittels "`F"', "`f"', "`M"' oder "`m"'. Dieses
+        Attribut darf ebenfalls maximal einmal vorkommen.
+    \item[countryOfCitizenship] zählt alle Staatsangehörigkeiten des Subjektes auf,
+        folglich darf das Attribut mehrmals vorkommen. Das Land wird als 2-stelliger
+        Länder-Code gemäss ISO/IEC 3166-1 ("`CH"' für Schweiz, "`DE"' für Deutschland
+        etc.) hinterlegt.
+    \item[countryOfResidence] nennt alle Länder der Aufenthaltsorte des Subjektes, kann
+        also mehrfach vorkommen. Das Land wird ebenfalls als zweistelliger ISO Code
+        hinterlegt.
+    \item[pseudonym] spezifiziert ein Pseudonym des Subjektes. Neben einer ID enthält es
+        das Pseudonym als Zeichenkette, welches unter Berücksichtigung der
+        Gross-Kleinschreibung behandelt wird.
+    \item[serialNumber] Auf dieses Attribut wird nicht eingegangen, es ist definiert in
+        ISO/IEC 9594-6.
+\end{description}
+
+\subsection{Generelle Attribute}
+
+Neben der beiden neu definierten Objekt-Klassen \texttt{pkcsEntity} und
+\texttt{naturalPerson} wird im Besonderen auf einige spezifische Attribute eingegangen.
+Von diesen sollen nun einige genauer betrachtet werden:
+
+\begin{description}
+    \item[contentType] Das Attribut \texttt{contentType} spezifiziert den Inhalts-Typen
+        des in PKCS\#7 (oder S/MIME) signierten \texttt{ContentInfo} Objektes. In solchen
+        Inhalten ist das Attribut \texttt{contentType} zwingend, falls authentifizierte
+        Attribute aus PKCS\#7 vorhanden sind.
+    \item[messageDigest] spezifiziert den Message Digest der Inhalte des \texttt{content}
+        Feldes des \texttt{ContentInfo} Objektes. Der Message Digest wird anhand dem
+        Algorithmus der signierenden Instanz berechnet. Dieses Attribut ist zwingend,
+        falls authentifizierte Attribute aus PKCS\#7 Verwendung finden.
+    \item[signingTime] benennt die Zeit, wann die Signatur erstellt wurde. Die Zeit wird
+        gemäss ISO/IEC 9594-8 notiert, wobei Daten vor dem 1.1.1950 oder nach dem
+        31.12.2049 müssen in Form der \texttt{GeneralizedTime} codiert werden, alle
+        anderen Zeiten als \texttt{UTCTime}~\cite[S.12]{pkcs9}.
+    \item[randomNonce] ist ein Attribut, welches es ermöglicht, gegen spezifische Attacken
+        zu schützen. Beispielsweise kann ein Unterzeichner \texttt{signingTime}
+        unterdrücken, um replay Attacken zu unterbinden. Das Attribut dient signierten
+        Daten aus PKCS\#7 und darf nur einmal vorkommen. Das Element \texttt{RandomNonce}
+        ist ein Oktett-String und muss mind. 4 Bytes lang sein.
+    \item[counterSignature] erlaubt es, eine Signatur zu signieren. Das Attribut hat
+        dieselbe Bedeutung wie \texttt{SignerInfo}~\cite[S.12]{pkcs7}, ausser:
+        \begin{itemize}
+            \item Das Feld \texttt{authenticatedAttributes} muss ein Attribut
+                \texttt{messageDigest} aufweisen, falls es irgendwelche andere Attribute
+                aufweist.
+            \item Der Inhalt des Message Digest ist der Inhalt des \texttt{signatureValue}
+                Feldes des \texttt{SignerInfo} Objektes. Das bedeutet, dass der
+                signierende Prozess (welcher die Signatur signiert) den originalen Inhalt
+                nicht zu kennen braucht. Zudem kann eine \texttt{counterSignature} selbst
+                wieder eine \texttt{counterSignature} beinhalten, so lassen sich beliebig
+                lange Ketten von \texttt{counterSignature} Objekten erstellen.
+        \end{itemize}
+    \item[challengePassword] spezifiziert ein Passwort, mit welchem eine Entität die
+        Annullierung eines Zertifikates verlangen kann. Die Interpretation des Inhaltes
+        ist wiederum der Anwendung überlassen, er wird jedoch unter Berücksichtigung von
+        Gross-Kleinschreibung verglichen. Es wird bemerkt, dass der Inhalt als
+        \texttt{PrintableString} encodiert werden soll, falls Internationalisierung dies
+        nicht ermöglicht, sollte stattdessen \texttt{UTF8String} verwendet werden.
+\end{description}
+
+
+\section{PKCS 13 - Elliptische Kurven}
+
+Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
+vergleichbare Sicherheit zu etablierten Public Key Verfahren mit kleineren Schlüsseln
+ermöglicht wird. Verbesserungen in der Implementierung wie der Erzeugung von elliptischen
+Kurven machen das Verfahren praxistauglicher als bei seiner Einführung in den 1980-er
+Jahren.
+
+PCKS\#13 ist bis heute noch kein definitiver Standard. Der Standard ist noch immer in
+Entwicklung. Der Standard soll die folgenden Aspekte der Kryptographie mit elliptischen
+Kurven abdecken~\cite{pkcs13-proj}:
+
+\begin{itemize}
+    \item Parameter und Schlüssel Erzeugung und Validierung
+    \item Digitale Signaturen
+    \item Public Key Verschlüsselung
+    \item Key Agreement (anstelle des verwundbaren anonymen Key-Exchanges wie z.Bsp.
+        Diffie-Hellman)
+    \item ASN.1 Syntax
+    \item Überlegungen zur Sicherheit
+\end{itemize}
+
+Es sind bereits Standards in Arbeit, welche sich mit der Kryptographie mit elliptischen
+Kurven befassen:
+\begin{description}
+    \item[ANSI X9.62] Ist ein in Entwicklung befindlicher Standard für digitale
+        Signaturen.
+    \item[ANSI X9.63 ] Ist ein in Entwicklung befindlicher Standard für Key Agreement.
+    \item[IEEE P1363] Soll eine generelle Referenz für Public Key Verfahren verschiedener
+        Techniken, inkl. elliptischer Kurven werden.
+\end{description}
+
+PKCS\#13 soll die anderen Standards vervollständigen, ein Profil der anderen Standards im
+PKCS Format liefern und eine Anleitung für die Integration in andere PKCS Anwendungen (wie
+beispielsweise PKCS\#7) bieten.
+
+\subsection{Aktueller Umfang}
+
+Zurzeit umfasst der Standard Grundlagen der folgenden Bereiche, welche allerdings keine
+konkreten Implementierungen oder Standards nennt. Diese Themen können als Grundlagen der
+Kryptographie mit elliptischen Kurven betrachtet werden.
+
+\begin{description}
+    \item[Functions] Grundlegende Definition einer Funktion: "`A function f from a set A
+        to a set B assigns to each element a in A a unique element b in
+        B."'~\cite{pkcs13-func}
+    \item[Modular arithmetic] Grundlagen der modularen Arithmetik
+    \item[Groups] Grundlagen der diskreten Mathematik ($\mathbb{Z}_p$ und
+        $\mathbb{Z}_p^*$) in Bezug auf Gruppen.
+    \item[Fields and rings] Ebenfalls mathematische Grundlagen.
+    \item[Vector spaces and lattices] Behandelt die Grundlagen der linearen Algebra und
+        der Vektorräume.
+    \item[Boolean expressions] Die Betrachtung logischer Ausdrücke als Funktionen.
+    \item[Time estimations and some complexitiy] Betrachtungen zur Komplexität.
+\end{description}
+
+Generell sind keine konkreten Vorgaben zu diesem Standard vorhanden. Zurzeit existiert
+lediglich ein Vorschlag, welcher mögliche Key Agreement Schemes, Signature Schemes,
+Encryption Schemes und Point Representations nennt.
+
+\FloatBarrier
+\appendix
+\renewcommand{\refname}{\section{Bibliographie}}
+\begin{thebibliography}{}
+    \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS\#7 Cryptographic Message Syntax Standard;
+        1993
+    \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0: Selected Object Classes and
+        Attribute Types; 2000
+    \bibitem[PKCS13]{pkcs13} RSA Laboratories: PKCS \#13: ELLIPTIC CURVE CRYPTOGRAPHY
+        STANDARD
+        \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/pkcs-13-elliptic-curve-cryptography-standard.htm}
+    \bibitem[PKCS13-proj]{pkcs13-proj} RSA Laboratories: PKCS\#13 Project overview,
+        \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/project-overview.htm},
+        1.1.2013
+    \bibitem[PKCS13-func]{pkcs13-func} RSA Laboratories: A.1 Functions,
+        \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/functions.htm},
+        1.1.2013
+\end{thebibliography}
+
+\end{document}
