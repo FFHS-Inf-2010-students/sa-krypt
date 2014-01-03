@@ -87,7 +87,7 @@ Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
 
 \begin{table}[ht]
    \centering
-   \begin{tabular}{|l|p{8.6cm}|} \hline
+   \begin{tabular}{|l|p{7.8cm}|} \hline
       \textbf{Datum} & \textbf{Fortschritt} \\\hline
       7.9.2013 & Gruppenbildung \\\hline
       8.9.2013 - 4.10.2013 & Individuelles Erarbeiten der Aufgabenstellung \\\hline
@@ -134,7 +134,7 @@ Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
 \subsubsection{Weitere Aufgaben}
 \begin{table}[ht]
    \centering
-   \begin{tabular}{|p{8cm}|l|} \hline
+   \begin{tabular}{|p{7.8cm}|l|} \hline
       \textbf{Aufgabe} & \textbf{Person} \\\hline
       Zusammenführung der Beiträge in einem Dokument & David Daniel \\\hline
       Zusammenfassung der Beiträge in einer Präsentation & \\\hline
@@ -680,6 +680,147 @@ Die beiden Operationen werden hier etwas vereinfach beschrieben:
     \item Bei Übereinstimmung ist der Output "`correct"', ansonsten "`incorrect"'
 \end{enumerate}
 
+\subsection{PKCS \#6 Extended-Certificate Syntax Standard}
+
+\subsubsection{Einleitung}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|} \hline
+        Aktuelle Version des Standards & 1.5 \\\hline
+        Datum & 1. November 1993 \\\hline
+        Seitenzahl & 11 \\\hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+\begin{quotation}
+    \itshape This standard describes syntax for extended certificates, consisting of a
+    certificate and a set of attributes, collectively signed by the issuer of the
+    certificate. The intended application of this standard is to extend the certification
+    process beyond just the public key to certify other information about the given
+    entity~\cite{pkcs6}.
+\end{quotation}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Was beschreibt der Standard?}
+Das Dokument beschreibt einen Syntax für «extended certificates» (Erweiterte Zertifikate).
+
+Ein erweitertes Zertifikat ist ein X.509 Public-Key-Zertifikat und eine Menge von
+Attributen, welche zusammen vom Aussteller des Zertifikats signiert werden.
+
+Durch die Verwendung der zusätzlichen Attribute wird im Zertifizierungsprozess nicht mehr
+nur das Public-Key-Zertifikat, sondern weitere Informationen des Zertifikathalters
+verifiziert, z.B. E-Mail-Adressen.
+
+\paragraph{Anwendungen des Standards}
+Gemäss [PKCS6] v1.5 wird die hauptsächliche Anwendung des Standards in PKCS \#7
+beschrieben, wobei weitere Anwendungen erwartet werden~\cite[S.1]{pkcs6}.
+
+
+\paragraph{Gründe für die Verwendung von erweiterten Zertifikaten}
+Die Standarddokumentation nennt vier Gründe für die Verwendung von erweiterten
+Zertifikaten:
+\begin{enumerate}
+    \item Änderungen an der X.509-Zertifikat-Syntax "`are easily followed"'
+    \item Das X.509-Zertifikat kann einfach aus dem erweiterten Zertifikat exportiert
+        werden
+    \item Sowohl das erweiterte Zertifikat, wie auch das darin enthaltene X.509-Zertifikat
+        können mit einer einzigen Public-Key-Operation verifiziert werden, da beide
+        zusammen von der selben Ausgabestelle signiert wurden.
+    \item Wenig Redundanz zwischen X.509-Zertifikat und erweitertem Zertifikat, da die
+        Informationen des X.509-Zertifikats bereits in dessen enthalten sind. Das
+        erweiterte Zertifikat enthält nur zusätzliche Informationen in seinen Attributen.
+\end{enumerate}
+
+\paragraph{Mögliche Attribute}
+Einige möglicherweise sinnvolle Attribute werden in PKCS \#9 definiert.
+
+\subsubsection{Syntax}
+Ein erweitertes Zertifikat besteht aus drei Teilen:
+\begin{enumerate}
+    \item Informationen zum erweiterten Zertifikat ("`extended-certificate information"')
+    \item ein "`signature algorithm identifier"'
+    \item eine digitale Signatur der Informationen zum erweiterten Zertifikat
+\end{enumerate}
+
+Die Informationen zum erweiterten Zertifikat bestehen aus einem bereits vom Aussteller
+signierten X.509-Zertifikat und einer Menge von Attributen, welche weitere Informationen
+zur im X.509-Zertifikat identifizierten "`entity"' enthalten.
+
+Das erweiterte Zertifikat wie das X.509-Zertifikat werden von der selben Ausgabestelle
+(CA) signiert.
+
+\paragraph{Erstellen eines erweiterten Zertifikats}
+\begin{enumerate}
+    \item Ein Wert für den Datentyp ExtendedCertificateInfo wird (von der Ausgabestelle)
+        erstellt, enthaltend ein X.509-Zertifikat sowie die Menge der zusätzlichen
+        Attribute.
+    \item Der Wert von ExtendedCertificateInfo wird mit dem privaten Schlüssel der
+        Ausgabestelle signiert.
+    \item Die oben genannten drei Bestandteile werden in den Datentyp ExtendedCertificate
+        zusammengeführt.
+\end{enumerate}
+
+\paragraph{Datentypen}
+\subparagraph{ExtendedCertificateInfo}
+\begin{verbatim}
+ExtendedCertificateInfo ::= SEQUENCE {
+    version Version,
+    certificate Certificate,
+    attributes Attributes
+}
+Version ::= INTEGER
+Attributes ::= SET OF Attribute
+\end{verbatim}
+
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        \textbf{Attribut} & \textbf{Beschreibung} \\\hline
+        version & Versionsnummer des Standards, aktuell 0 \\\hline
+        certificate & Ein X.509-Zertifikat \\\hline
+        attributes & Eine Menge möglicher Attribute mit weiteren Informationen \\\hline
+    \end{tabular}
+    \caption{Attribute von ExtendedCertificateInfo}
+    \label{tab:ext-cert-info-attribs}
+\end{table}
+
+
+\subparagraph{ExtendedCertificate}
+\begin{verbatim}
+ExtendedCertificate ::= SEQUENCE {
+    extendedCertificateInfo ExtendedCertificateInfo,
+    signatureAlgorithm SignatureAlgorithmIdentifier,
+    signature Signature
+}
+SignatureAlgorithmIdentifier ::= AlgorithmIdentifier
+Signature ::= BIT STRING
+\end{verbatim}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        \textbf{Attribut} & \textbf{Beschreibung} \\\hline
+        extendedCertificateInfo & Die eigentliche "`extended-certificate information"',
+            welche signiert wird. \\\hline
+        signatureAlgorithm & Der Signierungsalgorithmus, mit dem die Informationen
+            signiert werden. Bsp.: md2WithRSAEncryption, md5WithRSAEncryption (siehe PKCS
+            \#1) \\\hline
+        signature & Die resultierende Signatur der Informationen \\\hline
+    \end{tabular}
+    \caption{Attribute von ExtendedCertificate}
+    \label{tab:ext-cert-attribs}
+\end{table}
+
+\paragraph{Signierungsvorgang}
+\begin{enumerate}
+    \item DER-Verschlüsselung des Werts von extendedCertificateInfo
+    \item Die Signierung des Resultats aus Schritt 1 mit dem privaten Schlüssel der
+        Ausgabestelle
+\end{enumerate}
+
 \subsection{PKCS \#7 - Standard zur Syntax kryptographischer Nachrichten}
 
 \begin{description}
@@ -1104,6 +1245,9 @@ Encryption Schemes und Point Representations nennt.
         1.1.2014
     \bibitem[PKCS1]{pkcs1} RSA Laboratories: PKCS\#1,
         \url{ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1.pdf}
+    \bibitem[PKCS6]{pkcs6} RSA Laboratories: PKCS\#6,
+        \url{http://www.emc.com/emc-plus/rsa-labs/standars-initiatives/pkcs-6-extended-certificate-syntax-standard.htm},
+        1.1.2014
     \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS\#7 Cryptographic Message Syntax Standard;
         1993
     \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0: Selected Object Classes and
