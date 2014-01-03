@@ -476,10 +476,9 @@ Die Abbildung~\ref{fig:emsa-pss-encoding} illustriert das EMSA-PSS-ENCODING.
 \begin{quotation}
     \itshape This standard describes a method for implementing Diffie-Hellman key
     agreement. The intended application of this standard is in protocols for establishing
-    secure communications.
+    secure communications~\cite{pkcs10}.
 \end{quotation}
 
-\subsubsection{Zusammenfassung}
 
 \paragraph{Scope}
 Das Diffie-Hellmann-Schlüsselaustausch Protokoll wird in der Kryptografie verwendet, um
@@ -753,13 +752,13 @@ Das erweiterte Zertifikat wie das X.509-Zertifikat werden von der selben Ausgabe
 
 \paragraph{Erstellen eines erweiterten Zertifikats}
 \begin{enumerate}
-    \item Ein Wert für den Datentyp ExtendedCertificateInfo wird (von der Ausgabestelle)
-        erstellt, enthaltend ein X.509-Zertifikat sowie die Menge der zusätzlichen
-        Attribute.
-    \item Der Wert von ExtendedCertificateInfo wird mit dem privaten Schlüssel der
-        Ausgabestelle signiert.
-    \item Die oben genannten drei Bestandteile werden in den Datentyp ExtendedCertificate
-        zusammengeführt.
+    \item Ein Wert für den Datentyp \texttt{ExtendedCertificateInfo} wird (von der
+        Ausgabestelle) erstellt, enthaltend ein X.509-Zertifikat sowie die Menge der
+        zusätzlichen Attribute.
+    \item Der Wert von \texttt{ExtendedCertificateInfo} wird mit dem privaten Schlüssel
+        der Ausgabestelle signiert.
+    \item Die oben genannten drei Bestandteile werden in den Datentyp
+        \texttt{ExtendedCertificate} zusammengeführt.
 \end{enumerate}
 
 \paragraph{Datentypen}
@@ -1171,6 +1170,159 @@ Von diesen sollen nun einige genauer betrachtet werden:
         nicht ermöglicht, sollte stattdessen \texttt{UTF8String} verwendet werden.
 \end{description}
 
+\subsection{PKCS \#10: Certification Request Syntax Standard}
+
+\subsubsection{Einleitung}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        Aktuelle Version des Standards & 1.7 \\\hline
+        Datum & 26. Mai 2000 \\\hline
+        Seitenzahl & 10 \\\hline
+    \end{tabular}
+    \caption{Eigenschaften des Standards PKCS \#10}
+    \label{tab:pkcs-10-properties}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+\begin{quotation}
+    \itshape This standard describes syntax for a request for certification of a public
+    key, a name, and possibly a set of attributes~\cite{pkcs10}.
+\end{quotation}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Was beschreibt der Standard}
+Der Standard beschreibt die Syntax für Zertifizierungsanfragen. Ein solcher Request
+besteht aus dem eindeutigen Namen der Anfragestelle, einem öffentlichen Schlüssel und
+einer Menge optionaler Attribute. Sämtliche Bestandteile der Anfrage werden zusammen von
+der Anfragestelle signiert.
+
+Die Anfragen werden an eine Zertifizierungsstelle (Certification Authority, CA) geschickt,
+welche die Anfrage in ein X.509-Public-Key-Zertifikat umwandelt.
+
+Bei den zusätzlichen Attributen kann es sich um zusätzliche Informationen, wie
+Postadressen, handeln, oder um eine Challenge, mit welcher der Anfragesteller später das
+Zertifikat widerrufen lassen kann.
+
+\paragraph{Anwendungen des Standards}
+Die hauptsächliche Anwendung des Standards ist die Unterstützung kryptografischer
+Nachrichten wie in PKCS \#7 beschrieben~\cite[S.2]{pkcs10}.
+
+\paragraph{Mögliche Attribute}
+Mögliche zusätzliche Attribute werden in PKCS \#9 definiert (Liste nicht abschliessend).
+
+\paragraph{Gründe für die Erstellung einer Anfrage}
+\begin{enumerate}
+    \item Erstellen eines Schlüsselpaars durch die Anfragestelle
+    \item Änderung des eindeutigen Namens der Anfragestelle
+\end{enumerate}
+
+\subsubsection{Syntax}
+Eine Zertifizierungsanfrage besteht aus drei Teilen:
+
+\begin{enumerate}
+    \item Informationen zur Anfrage ("`certification request information"')
+    \item ein "`signature algorithm identifier"'
+    \item eine digitale Signatur der Informationen zur Anfrage
+\end{enumerate}
+
+Die Informationen zur Anfrage bestehen aus dem eindeutigen Namen der Anfragestelle, deren
+öffentlicher Schlüssel und einer Menge von optionalen Attributen.
+
+\paragraph{Erstellen einer Anfrage}
+\begin{enumerate}
+    \item Ein Wert für den Datentyp \texttt{CertificationRequestInfo} wird (von der
+        Anfragestelle) erstellt.
+    \item Der Wert von \texttt{CertificationRequestInfo} wird mit dem privaten Schlüssel
+        der Anfragestelle signiert.
+    \item Die oben genannten drei Bestandteile werden in den Datentyp
+        \texttt{CertificationRequest} zusammengeführt.
+\end{enumerate}
+
+Die CA, welche die Anfrage erhält, authentisiert die Anfragestelle und überprüft deren
+Signatur. Ist die Anfrage gültig, so wird ein X.509-Zertifikat erstellt.
+
+In welchem Form die CA das Zertifikat an die Anfragestelle retourniert, wird in diesem
+Standard nicht beschrieben. Dies kann als kryptografische Nachricht, aber auch in
+Papierform geschehen.
+
+\paragraph{Datentypen}
+\subparagraph{CertificationRequestInfo}
+\begin{verbatim}
+CertificationRequestInfo ::= SEQUENCE {
+    version INTEGER { v1(0) } (v1,...),
+    subject Name,
+    subjectPKInfo SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
+    attributes [0] Attributes{{ CRIAttributes }}
+}
+SubjectPublicKeyInfo {ALGORITHM : IOSet} ::= SEQUENCE {
+    algorithm AlgorithmIdentifier {{IOSet}},
+    subjectPublicKey BIT STRING
+}
+PKInfoAlgorithms ALGORITHM ::= {
+    ... -- add any locally defined algorithms here --
+}
+Attributes { ATTRIBUTE:IOSet } ::= SET OF Attribute{{ IOSet }}
+CRIAttributes ATTRIBUTE ::= {
+    ... -- add any locally defined attributes here --
+}
+Attribute { ATTRIBUTE:IOSet } ::= SEQUENCE {
+    type A TTRIBUTE.&id({IOSet}),
+    values SET SIZE(1..MAX) OF ATTRIBUTE.&Type({IOSet}{@type})
+}
+\end{verbatim}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        version & Versionsnummer des Standards, aktuell 0 \\\hline
+        subject & Der eindeutige Name der Anfragestelle \\\hline
+        subjectPublicKeyInfo & Informationen über den zu zertifizierenden öffentlichen
+            Schlüssel \\\hline
+        attributes & Menge optionaler Attribute mit Informationen über die Anfragestelle
+            \\\hline
+    \end{tabular}
+    \caption{Attribute von CertificationRequestInfo}
+    \label{tab:cert-request-info-attribs}
+\end{table}
+
+\subparagraph{CertificationRequest}
+\begin{verbatim}
+CertificationRequest ::= SEQUENCE {
+    certificationRequestInfo CertificationRequestInfo,
+    signatureAlgorithm AlgorithmIdentifier{{ SignatureAlgorithms}},
+    signature BIT STRING
+}
+AlgorithmIdentifier {ALGORITHM:IOSet } ::= SEQUENCE {
+    algorithm ALGORITHM.&id({IOSet}),
+    parameters ALGORITHM.&Type({IOSet}{@algorithm}) OPTIONAL
+}
+SignatureAlgorithms ALGORITHM ::= {
+    ... -- add any locally defined algorithms here --
+}
+\end{verbatim}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        certificateRequestInfo & Die eigentliche "`certificate request information"',
+            welche signiert wird. \\\hline
+        signatureAlgorithm & Der Signierungsalgorithmus, mit dem die Informationen
+            signiert werden. Bsp.: md5WithRSAEncryption (siehe PKCS \#1) \\\hline
+        signature & Die resultierende Signatur der Informationen \\\hline
+    \end{tabular}
+    \caption{Attribute von CertificationRequest}
+    \label{tab:cert-req-attribs}
+\end{table}
+
+\paragraph{Signierungsvorgang}
+\begin{enumerate}
+    \item DER-Verschlüsselung des Werts von certificationRequestInfo
+    \item Die Signierung des Resultats aus Schritt 1 mit dem privaten Schlüssel der
+        Anfragestelle
+\end{enumerate}
 
 \subsection{PKCS \#13 - Elliptische Kurven}
 
@@ -1245,22 +1397,33 @@ Encryption Schemes und Point Representations nennt.
         1.1.2014
     \bibitem[PKCS1]{pkcs1} RSA Laboratories: PKCS\#1,
         \url{ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1.pdf}
-    \bibitem[PKCS6]{pkcs6} RSA Laboratories: PKCS\#6,
+    \bibitem[PKCS3]{pkcs3} RSA Laboratories: PKCS \#3; Diffie-Hellman Key-Agreement
+        Standard, 1193
+    \bibitem[PKCS6]{pkcs6} RSA Laboratories: PKCS \#6; Extended- Certificate Syntax
+        Standard,
         \url{http://www.emc.com/emc-plus/rsa-labs/standars-initiatives/pkcs-6-extended-certificate-syntax-standard.htm},
         1.1.2014
-    \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS\#7 Cryptographic Message Syntax Standard;
+    \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS \#7 Cryptographic Message Syntax Standard;
         1993
-    \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0: Selected Object Classes and
+    \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0; Selected Object Classes and
         Attribute Types; 2000
+    \bibitem[PKCS10]{pkcs10} RSA Laboratories: PKCS \#10; Certification Request Syntax
+        Standard, 2000
+    \bibitem[PKCS11]{pkcs11} RSA Laboratories: PKCS \#11; Cryptographic Token Interface
+        Standard, 2004
+    \bibitem[PKCS12]{pkcs12} RSA Laboratories: PKCS \#12; Personal Information Exchange
+        Syntax, 1999
     \bibitem[PKCS13]{pkcs13} RSA Laboratories: PKCS \#13: ELLIPTIC CURVE CRYPTOGRAPHY
         STANDARD
         \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/pkcs-13-elliptic-curve-cryptography-standard.htm}
-    \bibitem[PKCS13-proj]{pkcs13-proj} RSA Laboratories: PKCS\#13 Project overview,
+    \bibitem[PKCS13-proj]{pkcs13-proj} RSA Laboratories: PKCS \#13 Project overview,
         \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/project-overview.htm},
         1.1.2013
     \bibitem[PKCS13-func]{pkcs13-func} RSA Laboratories: A.1 Functions,
         \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/functions.htm},
         1.1.2013
+    \bibitem[PKCS15]{pkcs15} RSA Laboratories: PKCS \#15; Cryptographic Token Information
+        Syntax Standard, 2000
 \end{thebibliography}
 
 \end{document}
