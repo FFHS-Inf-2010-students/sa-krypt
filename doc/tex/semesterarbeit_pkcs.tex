@@ -174,6 +174,7 @@ Kapitel detailliert betrachtet werden.
     \label{tab:pkcs-overview}
 \end{table}
 
+% Damit die Tabelle nicht auf die nächste Seite optimiert wird
 \FloatBarrier
 
 Die PKCS \#2 und \#4 wurden in den PKCS \#1 überführt und sind nicht mehr eigener Bestandteil
@@ -184,6 +185,277 @@ Laboratories~\cite{pkcs-standards} nicht erwähnt und wird hier ebenfalls nicht 
 betrachtet.
 
 \subsection{PKCS \#1: RSA Cryptography Standard}
+
+Das PKCS Dokument \#1 gibt Empfehlungen zur Implementierung von Public Key Kryptografie
+auf Basis des RSA Algorithmus. Dabei werden hauptsächlich die folgenden Aspekte abgedeckt,
+welche nachfolgend genauer erläutert werden:
+
+\begin{itemize}
+    \item Kryptografische Primitive
+    \item Verschlüsselungs Schemas (Encryption schemes)
+    \item Signierungs Schemas (Signature schemes)
+\end{itemize}
+
+\subsubsection{Key Typen}
+
+Bei RSA existieren 2 unterschiedliche Key Typen, welche zusammen als RSA Key Pair
+bezeichnet werden:
+
+\begin{itemize}
+    \item \textit{RSA Public Key} wird zum verschlüsseln bzw. verifizieren benutzt.
+    \item \textit{RSA Private Key} wird zum entschlüsseln bzw. signieren benutzt.
+\end{itemize}
+
+\subsubsection{RSA Public Key}
+\label{sec:rsa-public-key}
+Der Public Key besteht aus zwei Komponenten, nämlich einem Modulo und einem öffentlichen
+Exponenten (Public exponent). Beides sind positive Integer.
+
+\begin{description}
+    \item[n =] RSA Modulo. Der Modulo ist ein Produkt von mindestens 2 Primzahlen. In
+        Lehrbüchern und Beispielen werden häufig nur 2 Primzahlen multipliziert, es können
+        aber auch mehr verwendet werden. $(r_1, r_2, \dots, r_3)$ $r_1$ und $r_2$ werden
+        häufig auch als $p$ und $q$ bezeichnet.
+    \item[e =] Public exponent. Zahl zwischen 3 und $n-1$, welche relativ Prim
+        (teilerfremd) zu $(r_1 - 1) * (r_2 -1) * (r_3 - 1)$ ist.
+\end{description}
+
+Der Einfachheit halber wird in dieser Zusammenfassung immer davon ausgegangen, dass bei
+der Generierung von n nur 2 Primzahlen verwendet wurden.
+
+\subsubsection{RSA Private Key}
+Der Private Key besteht aus dem selben Modulo $n$ wie der Public Key. Zusätzlich existiert
+ein privater Exponent $d$:
+
+\begin{description}
+    \item[n =] RSA Modulo (siehe Kapitel~\ref{sec:rsa-public-key} (RSA Public Key)).
+    \item[d =] Private Exponent. $e * d \equiv 1 \mod (p - 1)(q - 1)$. $d$ ist also das
+        Inverse von $e \mod (p - 1)(q - 1)$.
+\end{description}
+
+\begin{description}
+    \item[Bemerkung:] Würden mehr als 2 Primzahlen verwendet werden, würde der Private Key
+        noch einige Komponenten mehr enthalten.
+\end{description}
+
+\subsubsection{Kryptographische Primitive}
+Kryptographische Primitive bezeichnen grundlegende mathematische Operationen auf denen die
+kryptographischen Schemas aufbauen. Es werden 4 Typen von Primitiven spezifiziert:
+\begin{itemize}
+    \item Verschlüsselung \& Entschlüsselung
+    \item Signierung und Verifikation
+\end{itemize}
+
+\paragraph{Verschlüsselungs und Entschlüsselungs Primitive}
+Ein Verschlüsselungsprimitiv erstellt unter Verwendung des Public Keys aus einer Nachricht
+ein Chiffrat. Das Entschlüsselungsprimitiv gewinnt unter Verwendung des Private Keys
+wieder die Nachricht aus dem Chiffrat.  RSA definiert die beiden Schemes RSAEP und RSADP
+(RSA Encryption/Decryption Primitiv).  Beide verwenden die selben mathematischen
+Operationen, wobei einfach unterschiedlicher Input verwendet wird.
+
+\begin{table}[ht]
+    \begin{tabular}{lll}
+        \textbf{RSAEP} & & \\
+        Input & $(n, e)$ & Public Key \\
+              & $m$ & Nachricht \\
+        Output & $c$ & Chiffrat
+    \end{tabular}
+\end{table}
+
+\begin{table}[ht]
+    \begin{tabular}{lll}
+        \textbf{RSADP} & & \\
+        Input & $(n, d)$ & Private Key \\
+         & $c$ & Chiffrat \\
+        Output & $m$ & Nachricht
+    \end{tabular}
+\end{table}
+
+Für die genaue Berechnung sei auf PKCS \#1~\cite[Kapitel 5.1]{pkcs1} verwiesen.
+
+\paragraph{Signatur und Verifikation Primitive}
+Das Signatur Primitiv erstellt unter Verwendung des Private Keys aus einer
+Nachricht~\footnote{Wie später noch gezeigt wird, muss es sich bei der Nachricht nicht um
+den gleichen Text handeln wie bei der Verschlüsselung. Es kann z.Bsp. auch der Hashwert
+der verschlüsselten Nachricht sein.} eine Signatur. Das Verifikations Primitiv gewinnt
+unter Verwendung des Public Keys aus der Signatur wieder die Nachricht. Die Primitiven
+RSASP1 und RSAVP1 (RSA Signature/Verification Primitives) funktionieren gleich wie RSADP
+und RSAEP, mit dem einzigen Unterschied, dass die Input und Output Argumente
+unterschiedlich sind.
+
+\begin{table}
+    \begin{tabular}{lll}
+        \textbf{RSASP1} & & \\
+        Input & $(n, d)$ & Private Key \\
+         & $m$ & Nachricht \\
+        Output & $s$ & Signatur
+    \end{tabular}
+\end{table}
+
+\begin{table}
+    \begin{tabular}{lll}
+        \textbf{RSAVP1} & & \\
+        Input & $(n, e)$ & Public Key \\
+         & $s$ & Signatur \\
+        Output & $m$ & Nachricht
+    \end{tabular}
+\end{table}
+
+\subsubsection{Schemas}
+Ein Schema kombiniert kryptographische Primitive mit anderen Techniken um ein bestimmtes
+Schutzziel zu erreichen. In PKCS \#1 werden Verschlüsselungs und Signatur Schemas
+spezifiziert. Die Schemas definieren nur die Schritte welche unternommen werden um die
+Daten zu verarbeiten. Es wird z.Bsp. keine Schlüssel generiert oder validiert.
+
+\subsubsection{Verschlüsselungs Schemas}
+Ein Verschlüsselungs Schema besteht aus einer Verschlüsselungs- und einer Entschlüsselungs
+Operation. Ein solches Schema kann für verschiedene Zwecke verwendet werden. Häufig wird
+es verwendet um z.Bsp. einen symmetrischen Schlüssel auszutauschen. In PKCS \#1 werden
+zwei unterschiedliche Schemas spezifiziert. RSAES-OAEP und RSAES-PKCS1-v1\_5. Für neuere
+Applikationen sollte nur noch ersteres verwendet werden, deshalb wird das letztere hier
+nicht weiter berücksichtigt.
+
+Grundsätzlich wird bei den Schemas zuerst ein Encoding der Nachricht durchgeführt. Die
+codierte Nachricht wird dann in eine Integerversion der Nachricht konvertiert. Auf diese
+Integerversion der Nachricht wird anschliessend die Verschlüsselungs Primitve angewendet
+um das Chiffrat zu erstellen. Genau umgekehrt funktioniert das Verfahren um wieder den
+Klartext zu erhalten.
+
+\paragraph{RSAES-OAEP}
+RSAES-OAEP kombiniert die RSAEP/RSADP Primitive mit der EME-OAEP Encoding Methode. OAEP
+steht für Optimal Asymmetric Encryption Padding und dient dazu das Kryptosystem gegen
+Chosen-Plaintext Attacken zu schützen in dem bei jeder Nachricht ein Zufalls-Padding
+vorgenommen wird. Dieses sehr wichtige Padding wird im Schulbuch RSA selten erwähnt.
+Um den Rahmen dieses Dokumentes nicht zu sprengen, wird im folgenden nur die
+Verschlüsselung beschrieben. Die Entschlüsselung funktioniert nach einem ähnlichen
+Prinzip.
+
+\subparagraph{Grobes Verfahren:}
+\begin{enumerate}
+    \item Länge der Nachricht prüfen
+    \item Encoding vornehmen (Details siehe EME-OAEP~\ref{par:eme-oaep})
+    \item Konvertieren in Integer Version, mithilfe von OS2IP (Octet String to Integer
+        Primitive)
+    \item Anwenden der RSAEP Primitive
+\end{enumerate}
+
+\subparagraph{EME-OAEP}
+\label{par:eme-oaep}
+\begin{enumerate}
+    \item Generieren des Hashwertes lHash des Labels L~\footnote{In PKCS \#1 werden für
+        RSAES-OAEP lediglich die Hashfunktionen SHA-1 und SHA-256/384/512 empfohlen.}
+        (welches in dieser Version der Spezifikation leer ist. Somit wird hier immer der
+        gleiche Hashwert verwendet, welcher jedoch natürlich abhängig von der verwendeten
+        Hashfunktion ist)
+    \item Generieren eines Null Oktet Strings PS der Länge k - mLen - 2hLen
+    \item Zusammenfügen von lHash, PS, einem Oktet $\mathtt{0x01}$ und der Nachricht M.
+        Wird zusammen als data block DB bezeichnet.
+    \item Generieren eines Random Strings seed
+    \item Anwenden einer MGF~\footnote{MGF = Mask Generation Functions werden hier nicht
+        näher erläutert. Für Details sei auf das Kapitel B.2 in PKCS \#1 verwiesen} auf
+        dem seed. Output = dbMask
+    \item maskedDB = DB xor dbMask
+    \item Anwenden einer MGF auf maskedDB. Output = seedMask
+    \item maskedSeed = seed xor seedMask
+    \item Das Oktet $\mathtt{0x00}$, maskedSeed und maskedDB bilden zusammen die codierte
+        Nachricht.
+\end{enumerate}
+
+\begin{table}[ht]
+    \begin{tabular}{ll}
+        k & Länge des Modulo n \\
+        mLen & Länge der Nachricht \\
+        hLen & Länge des Hashwertes
+    \end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.48]{images/eme-oap-graph}
+    \caption{Grafische Ansicht des EME-OAEP. \small{Quelle: PKCS \#1}}
+    \label{fig:eme-oap-graph}
+\end{figure}
+
+% \FloatBarrier
+
+\subsubsection{Signatur Schemas}
+Ein Signatur Schema besteht aus einer \textit{signature generation operation} und einer
+\textit{signature verifcation operation}. Die Erstere wird von der unterzeichnenden Partie
+mit Hilfe seines privaten Schlüssels verwendet um eine Signatur zu erstellen. Letztere
+wird von der prüfenden Partie mit Hilfe des öffentlichen Schlüssels der unterzeichnenden
+Partie verwendet um die Signatur zu überprüfen. Die in PKCS \#1 spezifizierten Schemas
+werden auch als Signatur Schemas mit Anhang bezeichnet, da sie die Nachricht selbst
+ebenfalls benötigen um die Signatur zu verifizieren. Im Gegensatz dazu existieren auch
+Signatur Schemas mit Möglichkeit zur Nachricht-Wiederherstellung.
+
+In PKCS\#1 werden zwei Schemas spezifiziert. RSASSA-PSS und RSASSA-PKCS1-v1\_5. Für neuere
+Applikationen wird RSASSA-PSS empfohlen, weshalb in diesem Dokument nur auf dieses
+eingegangen wird.
+
+\paragraph{RSASSA-PSS}
+RSASSA-PSS kombiniert die Primitive RSASP1/RSAVP1 mit dem EMSA-PSS Encoding (Auf EMSA-PSS
+wird in diesem Dokument nicht näher eingegangen). RSASSA-PSS ist probabilistisch da ein
+zufallsgeneriertes Salt eingefügt wird (PSS = Probabilistic Signature Scheme). Die
+Sicherheit beruht jedoch nicht auf diesem Salt und kann immer noch als gewährleistet
+betrachtet werden, wenn ein solcher Salt nicht generiert werden kann.
+
+\subparagraph{Signature generation operation}
+\begin{table}[ht]
+    \begin{tabular}{lll}
+        Input & $K$ & Private Key der signierenden Partie \\
+         & $M$ & Nachricht \\
+        Output & $S$ & Signatur
+    \end{tabular}
+    % \caption{<+Caption text+>}
+    % \label{tab:<+label+>}
+\end{table}
+
+
+\textbf{Schritte:}
+\begin{enumerate}
+    \item Anwenden des Encodings EMSA-PSS-ENCODE
+    \item Konvertieren der codierten Nachricht in Integer (OS2IP)
+    \item Anwenden von RSASP1 Primitive mit Hilfe von K und M
+    \item Konvertieren Integer Version in Oktet-String (I2OSP)
+    \item Output von Signatur S
+\end{enumerate}
+
+\subparagraph{Signature verification operation}
+\begin{table}[ht]
+    \begin{tabular}{lll}
+        Input & $(n, e)$ & Public Key der signierenden Partie \\
+         & $M$ & Nachricht \\
+        Output & & valide/invalide Signatur
+    \end{tabular}
+    % \caption{<+Caption text+>}
+    % \label{tab:<+label+>}
+\end{table}
+
+\textbf{Schritte:}
+\begin{enumerate}
+    \item Prüfung der Signatur Länge (Muss gleich Lang wie der Modulo n sein)
+    \item Konvertieren der Signatur S in Integer (OS2IP)
+    \item Anwenden der RSAVP1 Primitive mit Hilfe vom Public Key (n,e) und der
+        Nachricht M.
+    \item Konvertieren in Oktet-String (I2OSP)
+    \item Verifikation mittels EMSA-PSS-VERIFY
+    \item Ouput valide/invalide Signatur
+\end{enumerate}
+
+Bei der Verifikation wird zuerst der Salt wiederhergestellt, danach der Hashwert erneut
+berechnet und mit dem Hashwert welcher in der Signatur enthalten ist verglichen. Bei
+Übereinstimmung ist die Signatur valide.
+
+Die Abbildung~\ref{fig:emsa-pss-encoding} illustriert das EMSA-PSS-ENCODING.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.48]{images/emsa-pss-encoding}
+    \caption{EMSA-PSS-ENCODING. \small{Quelle: PKCS \#1}}
+    \label{fig:emsa-pss-encoding}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{PKCS \#3: Diffie-Hellman Key-Agreement Standard}
 
@@ -202,9 +474,9 @@ betrachtet.
 \paragraph{Kurzbeschreibung RSA Laboratories}
 
 \begin{quotation}
-    \textit{This standard describes a method for implementing Diffie-Hellman key
+    \itshape This standard describes a method for implementing Diffie-Hellman key
     agreement. The intended application of this standard is in protocols for establishing
-    secure communications.}
+    secure communications.
 \end{quotation}
 
 \subsubsection{Zusammenfassung}
@@ -302,7 +574,113 @@ Zudem werden in diesem PKCS die Domain Werte, also Primzahl p sowie eine Primiti
 nicht von den beiden Kommunikationsparteien sondern von einer zentralen Authorität
 gewählt.
 
-\subsection{PKCS 7 - Standard zur Syntax kryptographischer Nachrichten}
+\subsection{PKCS \#5}
+PKCS Dokument \#5 gibt Empfehlungen für die Implementierung von Passwort basierter
+Kryptografie. Passwörter sind nicht direkt als Schlüssel verwendbar und müssen deshalb
+angepasst werden, um als solchen verwendet werden zu können. Bei dieser Umwandlung in
+einen Schlüssel muss auch beachtet werden, dass Passwörter meist Teil von einem kleineren
+Raum sind. Die Anzahl verschiedener Werte ist also viel kleiner als z.Bsp. bei richtigen
+Schlüssel.
+
+Ein Ansatz zur Passwort basierten Kryptografie ist die Verwendung eines sogenannten Salt
+um einen Schlüssel zu produzieren. Der Salt ist ein zufälliger Wert welcher dem Passwort
+angehängt wird und somit verhindert, dass aus einem sogenannten Dictionary von bereits
+berechneten Hashwerten das Passwort ausgelesen werden kann. 
+
+Ein anderer Ansatz ist die Verwendung einer Funktion zur Ableitung eines Passworts, welche
+unterschiedlich oft ausgeführt wird (abhängig vom sogenannten Wiederholungszähler) Die in
+PKCS \#5 beschriebenen Methoden implementieren beide Ansätze, dementsprechend ist die
+Passwort basierte Schlüssel Ableitung eine Funktion von einem Passwort, einem Salt und dem
+Wiederholungszähler.
+
+In PKCS \#5 wird die Verwendung dieser Ableitung in Zusammenhang mit Verschlüsselung und
+Message Authentication definiert obwohl auch andere Verwendungszwecke denkbar wären
+(z.Bsp.  bei der Speicherung von Passwörtern).
+
+\subsubsection{Salt und Wiederholungszähler}
+Der Salt dient dazu für ein einzelnes Passwort eine grosse Menge von möglichen Keys
+generieren zu können. Bei einem 64 Bit langen Salt gibt es also für jedes Passwort $2^64$
+verschiedene Keys. Zudem ist es unwahrscheinlich, dass für das selbe Passwort zwei mal
+derselbe Key generiert wird.
+
+Der Wiederholungszähler dient dazu die Erstellung des Keys rechenaufwändiger zu machen,
+und somit die Schwierigkeit einer Attacke zu erhöhen. Es wird eine Anzahl von mindestens
+1000 Iterationen empfohlen.
+
+Salt und Wiederholungszähler müssen nicht geheim sein!
+
+\subsubsection{Schlüsselableitungsfunktion PBKDF2}
+Für neuere Applikationen wird PBKDF2 empfohlen, weshalb hier die PBKDF1 ausser Acht
+gelassen wird. Grob zusammengefasst funktioniert PBKDF2 folgendermassen.
+\begin{enumerate}
+    \item Der abgeleitete Schlüssel wird in einzelne Blöcke unterteilt
+    \item 2. Für jeden Block wird eine Pseudozufalls Funktion mehrere Male ausgeführt
+        (Anzahl gemäss Wiederholungszähler) und mit dem vorherigen Resultat der Funktion
+        XORed. Input der Funktion bei der ersten Ausführung ist das Passwort, der Salt
+        sowie die Nummer des Blocks (siehe Schritt 1). Bei allen weiteren Ausführungen das
+        Passwort und das Resultat der letzten Iteration.
+    \item 3. Am Schluss werden die einzelnen Blöcke zusammengesetzt und das ist dann der
+        abgeleitete Schlüssel.
+\end{enumerate}
+
+Als Pseudozufallsfunktionen kommen HMAC-SHA-1 oder HMAC-SHA-2 in Frage.
+
+\subsubsection{Verschlüsselungs Schema PBES2}
+Eine typische Anwendung von einem \textbf{P}assword \textbf{B}ased \textbf{E}ncryption
+\textbf{S}cheme (wie PBES2~\footnote{Neben PBES2 existiert auch noch PBES1, welches jedoch
+nicht mehr verwendet werden soll.}) ist der Schutz von Private Keys, also von Nachrichten
+welche Private Key Informationen enthalten. PBES2 kombiniert die
+Schlüsselableitungsfunktion PBKDF2 mit einem Verschlüsselungs-Schema (z.Bsp. AES-CBC-Pad)
+
+Etwas vereinfacht werden bei Ver- und Entschlüsselung folgende Schritte durchgeführt:
+\paragraph{Verschlüsselung}
+\begin{enumerate}
+    \item Wählen von Salt und Wiederholungszähler
+    \item Erstellen des Schlüssels mit Hilfe von PBKDF2
+    \item Verschlüsseln der Nachricht mit z.Bsp. AES-CBC-Pad
+\end{enumerate}
+
+\paragraph{Entschlüsselung}
+\begin{enumerate}
+    \item Erlangen von Salt und Wiederholungszähler
+    \item Erstellen des Schlüssels mit Hilfe von PBKDF2
+    \item Entschlüsseln der Nachricht mithilfe des abgeleiteten Schlüssel aus Schritt 2
+\end{enumerate}
+
+Wie man sieht, wird mit dem gleichen Schlüssel ver- und entschlüsselt (schliesslich ist
+AES ja auch ein symmetrisches Verfahren).
+
+\subsubsection{Message Authentication Schema PBMAC1}
+Eine Message Authentication Schema besteht aus einer MAC Erzeugungs-Operation und einer
+MAC Verifikations-Operation. Dabei wird (anders als bei einer Signatur) die Erzeugung
+sowie die Verifikation des MACs (Message Authentication Code) mit dem selben Schlüssel
+vorgenommen.
+
+PBMAC1 kombiniert die Schlüsselableitungsfunktion PBKDF2 mit einem Message Authentication
+Schema. Namentlich sind das HMAC-SHA-1 oder HMAC-SHA-2, welche beide auf den SHA-1
+respektive SHA-224, SHA-256, SHA-384 oder SHA-512 Hash Funktionen basieren.
+
+Die beiden Operationen werden hier etwas vereinfach beschrieben:
+
+\paragraph{PBMAC1 Erzeugungsoperation}
+\begin{enumerate}
+    \item Wählen von Salt und Wiederholungszähler
+    \item Erstellen des Schlüssels mit Hilfe von PBKDF2
+    \item Erstellen des MAC mithilfe der erzeugten Schlüssels und dem zugrunde liegenden
+        Message Authentication Schemas (z.B. HMAC-SHA-2)
+\end{enumerate}
+
+\paragraph{PBMAC1 Verifikationsoperation}
+\begin{enumerate}
+    \item Erlangen von Salt und Wiederholungszähler
+    \item Erstellen des Schlüssels mit Hilfe von PBKDF2
+    \item Erstellen des MAC mithilfe der erzeugten Schlüssels und dem zugrunde liegenden
+        Message Authentication Schemas (z.B. HMAC-SHA-2)
+    \item Vergleichen des eben erzeugten MACs und des zu verifizierenden MACs
+    \item Bei Übereinstimmung ist der Output "`correct"', ansonsten "`incorrect"'
+\end{enumerate}
+
+\subsection{PKCS \#7 - Standard zur Syntax kryptographischer Nachrichten}
 
 \begin{description}
     \item[PKCS \#7] definiert eine generelle Syntax zur Beschreibung von Inhalten welche in
@@ -459,7 +837,60 @@ ist eher dazu gedacht, für lokale Verschlüsselung verwendet zu werden. Der Typ
 lediglich eine Version und den verschlüsselten Inhalt wie er Bestandteil des enveloped
 content type ist (Syntax \ref{syntax:enveloped}, \texttt{EncryptedContentInfo}).
 
-\subsection{PKCS 9 - Ausgewählte Objektklassen und Attribute}
+\subsection{PKCS \#8}
+Der Standard in PKCS \#8 beschreibt die Syntax um Private Key Informationen zu speichern.
+Dies kann sowohl unverschlüsselt als auch verschlüsselt geschehen (z.Bsp. mit den in PKCS
+\#5 beschriebenen Algorithmen). Wie in allen PKCS Dokumenten wird zur Beschreibung der
+Syntax die ASN.1~\footnote{Abstract Syntax Notation One:
+\url{http://www.itu.int/ITU-T/asn1/}} verwendet.
+
+\subsubsection{Private Key Information Syntax}
+Die Syntax für den ASN.1 Typ PrivateKeyInfo:
+\begin{verbatim}
+PrivateKeyInfo ::= SEQUENCE {
+    version Version,
+    privateKeyAlgorithm PrivateKeyAlgorithmIdentifier,
+    privateKey PrivateKey,
+    attributes [0] IMPLICIT Attributes OPTIONAL
+}
+Version ::= INTEGER
+PrivateKeyAlgorithmIdentifier ::= AlgorithmIdentifier
+PrivateKey ::= OCTET STRING
+Attributes ::= SET OF Attribute
+\end{verbatim}
+
+\paragraph{Bedeutung der Felder:}
+\begin{description}
+    \item[version] Syntax Versionsnummer dient der Kompatibilität von zukünftigen
+        Überarbeitungen dieses Standards. Für diese Version des Standards ist sie 0.
+    \item[privateKeyAlgorithm] Bezeichnet der verwendete Algorithmus. z.Bsp. rsaEncryption
+        aus PKCS \#1
+    \item[privateKey] Dies ist der Private Key
+    \item[attributes] Eine Menge von Attributen, wie sie z.Bsp. in PKCS \#9 definiert
+        sind.
+\end{description}
+
+\subsubsection{Verschlüsselte Private Key Information Syntax}
+\label{sec:private-key-info}
+Die Syntax für den ASN.1 Typ EncryptedPrivateKeyInfo:
+\begin{verbatim}
+EncryptedPrivateKeyInfo ::= SEQUENCE {
+    encryptionAlgorithm EncryptionAlgorithmIdentifier,
+    encryptedData EncryptedData
+}
+EncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
+EncryptedData ::= OCTET STRING
+\end{verbatim}
+
+\paragraph{Bedeutung der Felder}
+\begin{description}
+    \item[encryptionAlgorithm] Bezeichnet den verwendeten Algorithmus um die Private Key
+        Information zu verschlüsseln (Bsp. aus PKCS \#5: pbeWithMD5AndDES-CBC)
+    \item[encryptedData] Die verschlüsselte Private Key Information (PrivateKeyInfo aus
+        Abschnitt~\ref{sec:private-key-info})
+\end{description}
+
+\subsection{PKCS \#9 - Ausgewählte Objektklassen und Attribute}
 In PKCS\#9 werden einige Objektklassen und Attribute behandelt, welche Bestandteile
 anderer PKCS Dokumente sind und von unterschiedlichen Dokumenten gleichermassen
 referenziert werden.
@@ -600,7 +1031,7 @@ Von diesen sollen nun einige genauer betrachtet werden:
 \end{description}
 
 
-\subsection{PKCS 13 - Elliptische Kurven}
+\subsection{PKCS \#13 - Elliptische Kurven}
 
 Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
 vergleichbare Sicherheit zu etablierten Public Key Verfahren mit kleineren Schlüsseln
@@ -671,6 +1102,8 @@ Encryption Schemes und Point Representations nennt.
         STANDARDS,
         \url{http://www.emc.com/emc-plus/rsa-labs/standards-initiatives/public-key-cryptography-standards.htm},
         1.1.2014
+    \bibitem[PKCS1]{pkcs1} RSA Laboratories: PKCS\#1,
+        \url{ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1.pdf}
     \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS\#7 Cryptographic Message Syntax Standard;
         1993
     \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0: Selected Object Classes and
