@@ -1324,6 +1324,157 @@ SignatureAlgorithms ALGORITHM ::= {
         Anfragestelle
 \end{enumerate}
 
+\subsection{PKCS \#11: Cryptographic Token Interface Standard}
+
+\subsubsection{Einleitung}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{7.2cm}|} \hline
+        Aktuelle Version des Standards & 2.2 \\\hline
+        Datum & 16. April 2009 \\\hline
+        Seitenzahl & - \\\hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+\begin{quotation}
+    \itshape This standard specifies an API, called Cryptoki, to devices which hold
+    cryptographic information and perform cryptographic functions. Cryptoki, pronounced
+    crypto-key and short for cryptographic token interface, follows a simple object-based
+    approach, addressing the goals of technology independence (any kind of device) and
+    resource sharing (multiple applications accessing multiple devices), presenting to
+    applications a common, logical view of the device called a cryptographic
+    token~\cite{pkcs11}.
+\end{quotation}
+
+\paragraph{Dokumente}
+RSA Laboratories hat mehrere Dokumente zum PKCS \#11 veröffentlicht. Die Definition des
+Standards wird in [PKCS11] v2.20 beschrieben. Die v2.30-Dokumente sind Entwürfe für diese
+nie veröffentlichte Version.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|p{5cm}|l|} \hline
+        \textbf{Dateiname} & \textbf{Beschreibung} & \textbf{Seitenzahl} \\\hline
+        pkcs-11v2-11mp.pdf & PKCS \#11 Profiles For Mobile Devices & 8 \\\hline
+        pkcs-11v2-20.pdf & PKCS \#11 v2.20: Cryptographic Token Interface Standard & 391
+            \\\hline
+        pkcs-11v2-30-d1.pdf & PKCS \#11 v2.30: Cryptographic Token Interface Standard & 7
+            \\\hline
+        pkcs-11v2-30b-d6.pdf & PKCS \#11 Base Functionality v2.30: Cryptoki - Draft 4 & 200
+            \\\hline
+        pkcs-11v2-30m1-d7.pdf & PKCS \#11 Mechanisms v2.30: Cryptoki - Draft 7 & 233
+            \\\hline
+        pkcs-11v2-30m2-d3.pdf & PKCS \#11 Other Mechanisms v2.30: Cryptoki & 85 \\\hline
+    \end{tabular}
+    \caption{Liste der PKCS \#11-Standardokumente}
+    \label{tab:pkcs11-doclist}
+\end{table}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Was beschreibt der Standard?}
+Der Standard beschreibt eine API namens "`Cryptographic Token Interface"', kurz
+"`Cryptoki"', für den Zugriff auf Geräte welche kryptografische Informationen enthalten
+oder kryptografische Funktionen ausführen (Beispiele: Smart-Cards, Hardware Security
+Module, aber auch Software).
+
+Das Standarddokument spezifiziert die von der API bereitgestellten Datentypen und
+Funktionen für die Programmiersprache C. Diese Datentypen und Funktionen werden durch
+Hersteller von Cryptoki-Libraries zur Verfügung gesteltl (beispielsweise als
+C-Header-Files).
+
+Cryptoki dient als Abstraktionsebene zu einem kryptografischen Gerät. Anwendungsprogramme
+müssen demzufolge nicht für verschiedene Geräte angepasst werden sondern sind bezüglich
+der Interaktion mit den kryptografischen Geräten portabel. Die API ist für den Betrieb
+mit Einzelbenutzer-Geräten konzipiert und die Verwendung eines einzelnen
+Benutzerschlüssels und allenfalls einer kleinen Anzahl davon abhängiger Zertifikate.
+
+\paragraph{Das Cryptoki-Modell}
+Wie bereits erwähnt, dient Cryptoki einem Anwendungsprogramm als Schnittstelle zu einem
+kryptografischen Gerät. Dieser Umstand wird in der Abbildung~\ref{fig:cryptoki-model}
+grafisch dargestellt.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.56]{images/general_cryptoki_model.png}
+    \caption{Cryptoki Modell~\cite[S.14]{pkcs11}}
+    \label{fig:cryptoki-model}
+\end{figure}
+
+Die Verbindung zu den Geräten (Tokens) wird über sogenannte «Slots» hergestellt. Obwohl in
+der Grafik allen Slots ein Gerät zugewiesen ist, können sich mehrere Slots auch ein Gerät
+teilen. Für das Anwendungsprogramm ist das letztlich irrelevant, ebenso wie die Art des
+angeschlossenen Geräts.
+
+\subparagraph{Logische Sicht auf Tokens}
+Aus Sicht von Cryptoki ist ein Token irgendein Gerät, welches Objekte speichert und
+kryptografische Funktionen ausführt~\cite[S.15]{pkcs11}, wobei ein Objekt Daten, einen
+Schlüssel oder ein Zertifikat repräsentieren kann
+(Abbildung~\ref{fig:cryptoki-object-hierarchy}).
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.56]{images/cryptoki_object_hierarchy.png}
+    \caption{Cryptokis Objekt-Hierarchie~\cite[S.15]{pkcs11}}
+    \label{fig:cryptoki-object-hierarchy}
+\end{figure}
+
+Diese Objekt-Hierarchie stellt Cryptokis logische Sicht auf kryptografische Geräte dar.
+Nicht jedes kryptografische Gerät arbeitet intern mit solchen Objekten und es ist die
+Aufgabe der jeweiligen Cryptoki-Implementation, diese Implementierungsdetails in die
+logische Sicht zu überführen.
+
+\subparagraph{Benutzer}
+Cryptoki definiert zwei Arten von Benutzern: den normalen Benutzer und den Security
+Officer. Nur der normale Benutzer kann auf die privaten Daten des Tokens zugreifen,
+allerdings erst nachdem er nach Eingabe eines PINs vom Security Officer authentifiziert
+wurde. Inwiefern diese Benutzer in der konkreten Cryptoki-Implementation umgesetzt werden,
+ist nicht Bestandteil des Standards. Die beiden Benutzer können verschiedene Personen
+sein, es ist aber auch eine Implementierung möglich, in welcher eine Person beide Rollen
+einnimmt. Ebenso ist die Art und Weise des benötigten PINs abhängig vom verwendeten
+kryptografischen Gerät.
+
+\paragraph{Verwendung von Cryptoki}
+Dieser Abschnitt beschreibt die grundlegende Anwendung von Cryptoki.
+
+\subparagraph{Zum Begriff "`Anwendungsprogramm"'}
+Bis jetzt war von Anwendungsprogrammen als Benutzerschnittstellen die Rede, welche mit
+einem Token kommunizieren müssen, um bspw. dessen kryptografischen Funktionen zu nützen.
+
+Aus Sicht von Cryptoki ist ein Anwendungsprogramm ein einzelner Adressraum, inkl. aller
+darin laufenden Threads. Durch den Aufruf der Cryptoki-Funktion \texttt{C\_Initialize()}
+(innerhalb eines Threads des Adressraums, wird die Applikation zu einer
+"`Cryptoki-Applikation"'. Diese Sicht von Cryptoki bedeutet, dass ein mit \texttt{fork()}
+gestarteter Kindprozess keinen Zugriff auf Tokens hat, solang er nicht selbst einen Aufruf
+von \texttt{C\_Initialize()} macht.)
+
+\subparagraph{Sessions}
+Um auf die Objekte und Funktionen eines an einem Slot angehängten Geräts zugreifen zu
+können, muss mit Cryptoki zuerst eine Session gestartet werden, welche das
+Anwendungsprogramme mit dem Slot und somit mit dem Gerät verbindet.
+
+Es wird zwischen Read-Only- und Read-Write-Sessions unterschieden, wobei Token-Objekte nur
+mit Read-Write-Sessions erstellt, bearbeitet und zerstört werden können. Weiter verfügen
+Tokens über öffentliche und private Objekte. Zugriff auf die privaten Objekte des Tokens
+sind nur möglich, wenn der normale Benutzer vom Security Officer authentifiziert wurde.
+
+\subparagraph{Beenden der Verbindung}
+Benötigt das Anwendunsprogramm das kryptografische Gerät nicht mehr, kann die Verbindung
+durch Aufrufen von \texttt{C\_Finalize()} beendet werden.
+
+\subparagraph{Funktionsumfang}
+Zwischen dem Erstellen der Sessions und dem Aufruf von \texttt{C\_Finalize()} kann das
+Anwendungsprogramm mittels der von Cryptoki zur Verfügung gestellten Funktionen mit dem
+kryptografischen Gerät kommunizieren. Dieser gesamte Funktionsumfang wird im Kapitel 11
+von [PKCS11] detailliert beschrieben.
+
+\subparagraph{Mechanismen}
+[PKCS11] definiert in Kapitel 12 eine Menge von Mechanismen, welche kryptografische
+Prozesse spezifizieren. Der Mechanismus CKM\_RSA\_PKCS\_KEY\_PAIR\_GEN spezifiziert
+beispielsweise die Generierung von RSA-Schlüsselpaaren. Diese Mechanismen stehen nicht
+zwingend mit jedem kryptografischen Gerät zur Verfügung.
+
 \subsection{PKCS \#13 - Elliptische Kurven}
 
 Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
