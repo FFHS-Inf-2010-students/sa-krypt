@@ -1402,7 +1402,7 @@ grafisch dargestellt.
     \label{fig:cryptoki-model}
 \end{figure}
 
-Die Verbindung zu den Geräten (Tokens) wird über sogenannte «Slots» hergestellt. Obwohl in
+Die Verbindung zu den Geräten (Tokens) wird über sogenannte "`Slots"' hergestellt. Obwohl in
 der Grafik allen Slots ein Gerät zugewiesen ist, können sich mehrere Slots auch ein Gerät
 teilen. Für das Anwendungsprogramm ist das letztlich irrelevant, ebenso wie die Art des
 angeschlossenen Geräts.
@@ -1475,6 +1475,155 @@ Prozesse spezifizieren. Der Mechanismus CKM\_RSA\_PKCS\_KEY\_PAIR\_GEN spezifizi
 beispielsweise die Generierung von RSA-Schlüsselpaaren. Diese Mechanismen stehen nicht
 zwingend mit jedem kryptografischen Gerät zur Verfügung.
 
+\subsection{PKCS \#12: Personal Information Exchange Syntax Standard}
+
+\subsubsection{Einleitung}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|} \hline
+        Aktuelle Version des Standards & 1.1 \\\hline
+        Datum & 27.10.2012 \\\hline
+        Seitenzahl & 23 \\\hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+\begin{quotation}
+    \itshape This standard specifies a portable format for storing or transporting a
+    user's private keys, certificates, miscellaneous secrets, etc.
+\end{quotation}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Scope}
+Diese Definition standartisiert eine Syntax für den direkten Austausch von persönlichen
+Identifikations Informationen wie z.B.:
+
+\begin{itemize}
+    \item Private Schlüssel
+    \item Zertifikate
+    \item Sonstige geheimen Daten
+    \item Erweiterungen
+\end{itemize}
+
+Anwendungen, Browser, etc. welche diesen Standard unterstützen ermöglichen es Usern, ein
+einzelnes Set von persönlichen Identitätsinformationen zu importieren und exportieren.
+Dieser Standard kann als eine Erweiterung von PKCS \#8 angesehen werden. Zusätzlich bietet
+man jedoch noch essentielle aber notwendige Identitätsinformationen samt privaten
+Schlüssel an. Zudem ermöglicht man eine höhere Sicherheitsstufe durch den Einsatz von
+public-key Verfahren sowie Integritätsschutz durch integrity modi.
+
+PKCS\#12 kann sowohl in der Software als auch in der Hardware zum Einsatz kommen. Ein
+Beispiel dazu ist die Sicherstellung der physikalischen Sicherheit für tamper-persistante
+tokens, wie z.B. Smartcard / PCMCIA Treiber.
+
+\paragraph{Einsatz}
+Es werden zwei Sicherheitslevel unterstützt:
+\begin{enumerate}
+    \item (höchste Stufe) Public / Private Key Paar wo sowohl beim Sender und Empfänger
+        zum Einsatz kommen für Verschlüsselung und Authentizitätsschutz (Integrität)
+    \item (tiefere Stufe) Passwort-basierte privacy und integrity Modi, wenn keine public
+        / private Key Paare zum Einsatz kommen können
+\end{enumerate}
+
+Mit diesen beiden Sicherheitslevel können insgesamt vier Kombinationen von
+privacy/integrity Modi eingesetzt werden:
+
+\begin{itemize}
+    \item Privacy Modi:
+        \begin{itemize}
+            \item Public-key privacy Modus (Sender verschlüsselt mit dem öffentlichen
+                Schlüssel des Empfängers. Der Empfänger entschlüsselt mit seinem privaten
+                Schlüssel.)
+            \item Password privacy Modus (Symmetrischer Schlüssel, welcher aus Username
+                und Password erzeugt wird)
+        \end{itemize}
+    \item Integrity Modi:
+        \begin{itemize}
+            \item Public-key integrity Modus (Digitale Signatur mittels privatem Schlüssel
+                des Senders. Wird beim Empfänger mit dem öffentlichen Schlüssel des
+                Senders verifiziert.)
+            \item Password integrity Modus (MAC abgeleitet aus einem geheimen
+                Integritäts-Passwort)
+        \end{itemize}
+\end{itemize}
+
+Für die Anwendung des Passwort-Integritäts Modus mit MAC wird HMAC verwendet. Gefordert
+wird für die Hashfunktion SHA-1 und der MAC Schlüssel muss 160Bit betragen.
+
+\paragraph{Richtlinien für die Wahl des Modus}
+Grundsätzlich sind alle möglichen Kombinationen erlaubt. Es gibt allerdings gewisse Punkte
+die beachtet werden sollten. Z.B. beim Einsatz von Password Privacy Modus sollte beim
+Transport der privaten Schlüssel darauf geachtet werden, dass diese ausreichen
+physikalisch geschützt werden. Zusammegefasst kann gesagt werden, dass Public-Key Modi für
+Privacy sowohl auch für Integrity mit Password Modus kombiniert werden sollten.
+
+\paragraph{Zuverlässige Public-Keys}
+Asymmetrische Schlüsselpaare können in diesem Standard in zwei Arten genutzt werden:
+
+\begin{itemize}
+    \item Public-Key Privacy Modus
+        \begin{itemize}
+            \item Benötigt ein Schlüsselpaar für die Verschlüsslung (encryption)
+        \end{itemize}
+    \item Public-Key Integrity Modus
+        \begin{itemize}
+            \item Benötigt ein Schlüsselpaar für die Signature (signature)
+        \end{itemize}
+\end{itemize}
+
+\paragraph{AuthenticatedSafe}
+Jede konforme Plattform muss eine AuthenticatedSafe PDU’s (Protocol Data Unit) als PFX-PDU
+gewrappte Einheit importieren und exportieren können. 
+
+Die AuthenticatedSafe Einheit bestehen aus einer Sequenz von ContentInfo Einheiten. Diese
+ContentInfo-Strukturen sind in PKCS\#7 beschrieben. Der Inhalts-Typ dieser
+ContentInfo-Werte kann entweder Klartext (data), enveloped data (wenn Public-Key Privacy
+Modus verwendet wird) oder encrypted data (wenn Password-Privacy Modus verwendet wird)
+sein.
+
+\begin{verbatim}
+AuthenticatedSafe ::= SEQUENCE OF ContentInfo
+    -- Data if unencrypted
+    -- EncryptedData if password-encrypted
+    -- EnvelopedData if public key-encrypted 
+\end{verbatim}
+Eine ContentInfo Einheit umfasst eine beliebige Sammlung von privaten Schlüssel, PKCS\#8
+umhüllte private Schlüssel, Zertifikate, etc, welche als Werte des Typs SafeContents
+gespeichert werden.
+
+Der Aufbau einer AuthenticatedSafe PDU Einheit gewrappt als PFX-PDU Einheit:
+
+\begin{verbatim}
+PFX ::= SEQUENCE {
+    version     Version    -- V3(3) for this version.
+    authSafes   ContentInfo,    -- from PKCS #7 
+        -- SignedData in public-key integrity mode
+        -- Data in password integrity mode
+    macData     MacData OPTIONAL
+        -- present only in password integrity mode
+}
+\end{verbatim}
+
+Der SafeContents-Typ besteht aus einer Sequenz aus SafeBags:
+
+\begin{verbatim}
+SafeContents ::= SEQUENCE OF SafeBag
+\end{verbatim}
+
+Ein SafeBag repräsentiert ein Stück Information, wie z.B. ein Schlüssel, ein Zertifikat
+sowie optionale attribute. Jeder SafeBag wird durch einen Objekt Identifikator
+identifiziert.
+
+\begin{verbatim}
+SafeBag ::= SEQUENCE {
+    bagId BAG-TYPE.&id ({PKCS12BagSet})
+    bagValue [0] EXPLICIT BAG-TYPE.&Type({PKCS12BagSet}{@bagId}),
+    bagAttributes SET OF PKCS12Attribute OPTIONAL
+}
+\end{verbatim}
+
 \subsection{PKCS \#13 - Elliptische Kurven}
 
 Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
@@ -1534,6 +1683,111 @@ Kryptographie mit elliptischen Kurven betrachtet werden.
 Generell sind keine konkreten Vorgaben zu diesem Standard vorhanden. Zurzeit existiert
 lediglich ein Vorschlag, welcher mögliche Key Agreement Schemes, Signature Schemes,
 Encryption Schemes und Point Representations nennt.
+
+\subsection{PKCS \#15: Cryptographic Token Information Syntax Standard}
+
+\subsubsection{Einleitung}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|l|l|} \hline
+        Aktuelle Version des Standards & 1.1 \\\hline
+        Datum & 16.05.2000 \\\hline
+        Seitenzahl & 81 \\\hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Kurzbeschreibung RSA Laboratories}
+
+\begin{quotation}
+    \itshape PKCS \#15 establishes a standard that enables users in to use cryptographic
+    tokens to identify themselves to multiple, standards-aware applications, regardless of
+    the application's cryptoki (or other token interface) provider.
+\end{quotation}
+
+\subsubsection{Zusammenfassung}
+
+\paragraph{Scope}
+Diese Definition spezifiziert sowohl ein Datei- als auch ein Pfadformat, um
+sicherheitsrelevante Informationen auf krypt. Tokens zu speichern. Die Realisierung kann
+sowohl in Hardware für Smartcards, als auch in Software für virtuelle Smartcards erfolgen.
+Allerdings ist dieser PKCS Standart veraltet und wird durch ISO/IEC 7816-15 abgelöst.
+
+\paragraph{Ziele}
+\begin{itemize}
+    \item Platform Interoperabilität zwischen Komponenten welche auf verschiedenen
+        Platformen laufen
+    \item Produkte Unabhängigkeit (Verschiedenen Produkte verschiedener Hersteller können
+        problemlos verwendent werden.)
+    \item Applikationsunabhängigkeit (Es muss keine extra Applikations-Level-Software
+        geschrieben werden um die Kompabilität zu gewährleisten.)
+    \item Konsistenz von bestehender, verwendeter Standarts erhalten und diese wenn nötig
+        weiter entwickeln
+\end{itemize}
+
+\paragraph{Anwendungsfall}
+Ein Besitzer einer IC-Karte sollte diese überall einsetzen können, unabhängig auf welchem
+System das Lesegerät betrieben wird. Es sollte ausschliesslich das Digitale-Zertifikat
+korrekt einsetzen können und somit auf die Hauptaufgabe reduziert werden. Dieses Beispiel
+umschreibt die oben erwähnten Ziele, wo am Schluss nicht das Hauptaugenmerk darauf
+gerichtet wird, um was für Systeme / Komponenten es sich handelt. Es sollten alle einem
+gemeinsamen Standart für die Verwaltung und den Einsatz von digitalen Zertifikaten folgen.
+
+\paragraph{Profile für das Datenformat und Zugriffsbedingungen}
+Diese Profil-Modelle definieren die Verzeichnisstruktur und Dateizugriffsbedingungen für
+den Einsatz von Tokens. Sie sind nötig, um die Konformität zu gewähren. Das heisst, um ein
+Token zu verwenden, benötigt man ein EID (Electronic Identification profile). Folgend ein
+Beispiel aus der offiziellen RSA Dokumentation zu PKCS\#15:
+
+\subparagraph{Verzeichnis Struktur}
+\begin{itemize}
+    \item MF: Master File
+    \item EF: Elementary File
+    \item DF: Directory File
+\end{itemize}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.42]{images/layout-ef-df}
+    \caption{Layout for the EFs and DFs for the profile}
+    \label{fig:layout-ef-df}
+\end{figure}
+
+\subparagraph{Dateizugriffsbedingungen}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.62]{images/access-cond-eid-profile}
+    \caption{general access conditions for the EID Profile}
+    \label{fig:access-cond-eid-profile}
+\end{figure}
+
+\FloatBarrier
+
+\subparagraph{Anforderungen}
+
+\paragraph{Private Schlüssel}
+Es braucht mindestens 2 private Schlüssel in einem PKCS\#15-Token. Davon wird ein Schlüssel
+sowohl für die Authorisierung wie auch Verschlüsselung benötigt. Der zweite Schlüssel wird
+exklusiv für die Nachweisbarkeit oder für Digitale-Signatur verwendet.
+
+\begin{itemize}
+    \item \textbf{Privater Schlüssel 1: PrKey1} muss durch die \textbf{PIN1} erifiziert
+        werden, bevor Verschlüsselungs-Operationen stattfinden können
+    \item \textbf{Privater Schlüssel 2: PrKey2} muss durch die \textbf{PIN2} verifiziert
+        werden, bevor jede Operation mit privaten Schlüsseln stattfinden können
+\end{itemize}
+
+\paragraph{Zertifikate}
+Für jeden privaten Schlüssel muss mindestens 1 korrespondierender X509 Zertifikats-Typ im
+Token gespeichert sein. Zudem muss auf dieses Zertifikat vom CDF(Certificate Directory
+File) verwiesen werden.
+
+\paragraph{Authentifizierungsobjekte}
+Auf dem Token müssen mindestens zwei Authentifizierungsobjekte, für den Schutz von
+privaten Objekten, vorhanden sein. Das zweite Authentifizierungsobekt, die PIN2, is
+ausschliesslich für die Authentifizierung von Nachweisbarkeits-Objekte (non-repudiation)
+zuständig. Zusätzlich muss die PIN2 nach jeder Operation mit privaten Schlüssel für die
+Nachweisbarkeit, den Verfizierungsstatus auf "`nicht verifiziert"' setzen.
+
 
 \FloatBarrier
 \appendix
