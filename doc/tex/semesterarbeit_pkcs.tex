@@ -19,9 +19,12 @@
 % Grafix
 \usepackage{graphicx}
 
-% TikZ (dot2tex etc.)
-\usepackage{tikz}
-\usetikzlibrary{decorations, arrows, shapes}
+% TikZ (dot2tex etc.) - brauchen wir zurzeit nicht
+% \usepackage{tikz}
+% \usetikzlibrary{decorations, arrows, shapes}
+
+% Captions in minipages
+\usepackage{capt-of}
 
 % Farben in Tabellen
 \usepackage{colortbl}
@@ -85,30 +88,30 @@ Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
 
 \subsection{Vorgehensweise}
 
-\begin{table}[ht]
-   \centering
-   \begin{tabular}{|l|p{7.8cm}|} \hline
-      \textbf{Datum} & \textbf{Fortschritt} \\\hline
-      7.9.2013 & Gruppenbildung \\\hline
-      8.9.2013 - 4.10.2013 & Individuelles Erarbeiten der Aufgabenstellung \\\hline
-      4.10.2013 & Aufteilen der Themen innerhalb der Gruppe \\\hline
-      4.10.2013 - 28.12.2013 & Individuelles Bearbeiten der Inhalte gemäss
-         Themenverteilung \\\hline
-      28.12.2013 & Besprechen des Fortschritts \\\hline
-      28.12.2013 - 4.1.2014 & Individuelles Finalisieren der Inhalte gemäss
-         Themenverteilung \\\hline
-      4.1.2014 & Verteilen der Aufgaben zum Abschliessen der Arbeit \\\hline
-      4.1.2014 - 9.1.2014 & Abschliessen der Arbeit \\\hline
-         & Abgabe der Arbeit \\\hline
-   \end{tabular}
-   \caption{Vorgehensweise}
-   \label{tab:vorgehensweise}
-\end{table}
+\begin{minipage}[t]{\textwidth}
+    \centering
+    \begin{tabular}{|l|p{7.8cm}|} \hline
+        \textbf{Datum} & \textbf{Fortschritt} \\\hline
+        7.9.2013 & Gruppenbildung \\\hline
+        8.9.2013 - 4.10.2013 & Individuelles Erarbeiten der Aufgabenstellung \\\hline
+        4.10.2013 & Aufteilen der Themen innerhalb der Gruppe \\\hline
+        4.10.2013 - 28.12.2013 & Individuelles Bearbeiten der Inhalte gemäss
+        Themenverteilung \\\hline
+        28.12.2013 & Besprechen des Fortschritts \\\hline
+        28.12.2013 - 4.1.2014 & Individuelles Finalisieren der Inhalte gemäss
+        Themenverteilung \\\hline
+        4.1.2014 & Verteilen der Aufgaben zum Abschliessen der Arbeit \\\hline
+        4.1.2014 - 9.1.2014 & Abschliessen der Arbeit \\\hline
+        & Abgabe der Arbeit \\\hline
+    \end{tabular}
+    \captionof{table}{Vorgehensweise}
+    \label{tab:vorgehensweise}
+\end{minipage}
 
 \subsection{Arbeitsteilung}
 
 \subsubsection{Verteilung der Themen}
-\begin{table}[ht]
+\begin{minipage}[t]{\textwidth}
    \centering
    \begin{tabular}{|c|l|} \hline
       \textbf{PKCS\#} & \textbf{Person} \\\hline
@@ -125,26 +128,22 @@ Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
       13 & David Daniel \\\hline
       15 & Marc Dünki \\\hline
    \end{tabular}
-   \caption{Verteilung der Themen}
+   \captionof{table}{Verteilung der Themen}
    \label{tab:arbeitsteilung}
-\end{table}
-
-\FloatBarrier
+\end{minipage}
 
 \subsubsection{Weitere Aufgaben}
-\begin{table}[ht]
+\begin{minipage}[t]{\textwidth}
    \centering
-   \begin{tabular}{|p{7.8cm}|l|} \hline
+   \begin{tabular}{|p{7.4cm}|l|} \hline
       \textbf{Aufgabe} & \textbf{Person} \\\hline
       Zusammenführung der Beiträge in einem Dokument & David Daniel \\\hline
-      Zusammenfassung der Beiträge in einer Präsentation & \\\hline
-      Abgabe der Aufgabe & \\\hline
+      Zusammenfassung der Beiträge in einer Präsentation & Alle (jeder seinen Teil) \\\hline
+      Abgabe der Aufgabe & Thomas Aregger \\\hline
    \end{tabular}
-   \caption{Verteilung weiterer Aufgaben}
+   \captionof{table}{Verteilung weiterer Aufgaben}
    \label{tab:weitere-aufgaben}
-\end{table}
-
-\FloatBarrier
+\end{minipage}
 
 \section{Public-Key Cryptography Standards}
 Die Public Key Cryptography Standards (PKCS) sind eine von RSA Laboratories~\cite{rsa-lab}
@@ -175,9 +174,6 @@ Kapitel detailliert betrachtet werden.
     \caption{Übersicht der PKCS}
     \label{tab:pkcs-overview}
 \end{table}
-
-% Damit die Tabelle nicht auf die nächste Seite optimiert wird
-\FloatBarrier
 
 Die PKCS \#2 und \#4 wurden in den PKCS \#1 überführt und sind nicht mehr eigener Bestandteil
 der PKCS-Familie~\cite[S.1]{kal91}.
@@ -255,53 +251,59 @@ wieder die Nachricht aus dem Chiffrat.  RSA definiert die beiden Schemes RSAEP u
 (RSA Encryption/Decryption Primitiv).  Beide verwenden die selben mathematischen
 Operationen, wobei einfach unterschiedlicher Input verwendet wird.
 
-\begin{table}[ht]
+\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         \textbf{RSAEP} & & \\
         Input & $(n, e)$ & Public Key \\
-              & $m$ & Nachricht \\
+        & $m$ & Nachricht \\
         Output & $c$ & Chiffrat
     \end{tabular}
-\end{table}
+\end{minipage}
 
-\begin{table}[ht]
+\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         \textbf{RSADP} & & \\
         Input & $(n, d)$ & Private Key \\
-         & $c$ & Chiffrat \\
+        & $c$ & Chiffrat \\
         Output & $m$ & Nachricht
     \end{tabular}
-\end{table}
+\end{minipage}
+\vspace{0.5cm}
 
 Für die genaue Berechnung sei auf PKCS \#1~\cite[Kapitel 5.1]{pkcs1} verwiesen.
 
 \paragraph{Signatur und Verifikation Primitive}
 Das Signatur Primitiv erstellt unter Verwendung des Private Keys aus einer
-Nachricht~\footnote{Wie später noch gezeigt wird, muss es sich bei der Nachricht nicht um
-den gleichen Text handeln wie bei der Verschlüsselung. Es kann z.Bsp. auch der Hashwert
-der verschlüsselten Nachricht sein.} eine Signatur. Das Verifikations Primitiv gewinnt
-unter Verwendung des Public Keys aus der Signatur wieder die Nachricht. Die Primitiven
-RSASP1 und RSAVP1 (RSA Signature/Verification Primitives) funktionieren gleich wie RSADP
-und RSAEP, mit dem einzigen Unterschied, dass die Input und Output Argumente
+Nachricht~\footnote{Wie später noch gezeigt wird, muss es sich bei der
+Nachricht nicht um den gleichen Text handeln wie bei der Verschlüsselung.  Es
+kann z.Bsp. auch der Hashwert der verschlüsselten Nachricht sein.} eine
+Signatur. Das Verifikations Primitiv gewinnt unter Verwendung des Public Keys
+aus der Signatur wieder die Nachricht. Die Primitiven RSASP1 und RSAVP1 (RSA
+Signature/Verification Primitives) funktionieren gleich wie RSADP und RSAEP,
+mit dem einzigen Unterschied, dass die Input und Output Argumente
 unterschiedlich sind.
 
-\begin{table}
+\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         \textbf{RSASP1} & & \\
         Input & $(n, d)$ & Private Key \\
-         & $m$ & Nachricht \\
+        & $m$ & Nachricht \\
         Output & $s$ & Signatur
     \end{tabular}
-\end{table}
+\end{minipage}
 
-\begin{table}
+\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         \textbf{RSAVP1} & & \\
         Input & $(n, e)$ & Public Key \\
-         & $s$ & Signatur \\
+        & $s$ & Signatur \\
         Output & $m$ & Nachricht
     \end{tabular}
-\end{table}
+\end{minipage}
 
 \subsubsection{Schemas}
 Ein Schema kombiniert kryptographische Primitive mit anderen Techniken um ein bestimmtes
@@ -363,13 +365,13 @@ Prinzip.
         Nachricht.
 \end{enumerate}
 
-\begin{table}[ht]
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{ll}
         k & Länge des Modulo n \\
         mLen & Länge der Nachricht \\
         hLen & Länge des Hashwertes
     \end{tabular}
-\end{table}
+\end{minipage}
 
 \begin{figure}[ht]
     \centering
@@ -377,8 +379,6 @@ Prinzip.
     \caption{Grafische Ansicht des EME-OAEP. \small{Quelle: PKCS \#1}}
     \label{fig:eme-oap-graph}
 \end{figure}
-
-% \FloatBarrier
 
 \subsubsection{Signatur Schemas}
 Ein Signatur Schema besteht aus einer \textit{signature generation operation} und einer
@@ -401,17 +401,17 @@ zufallsgeneriertes Salt eingefügt wird (PSS = Probabilistic Signature Scheme). 
 Sicherheit beruht jedoch nicht auf diesem Salt und kann immer noch als gewährleistet
 betrachtet werden, wenn ein solcher Salt nicht generiert werden kann.
 
-\subparagraph{Signature generation operation}
-\begin{table}[ht]
+\par\vspace{0.5cm}
+\textbf{Signature generation operation}
+\par\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         Input & $K$ & Private Key der signierenden Partie \\
-         & $M$ & Nachricht \\
+        & $M$ & Nachricht \\
         Output & $S$ & Signatur
     \end{tabular}
-    % \caption{<+Caption text+>}
-    % \label{tab:<+label+>}
-\end{table}
-
+\end{minipage}
+\par\vspace{0.5cm}
 
 \textbf{Schritte:}
 \begin{enumerate}
@@ -422,16 +422,17 @@ betrachtet werden, wenn ein solcher Salt nicht generiert werden kann.
     \item Output von Signatur S
 \end{enumerate}
 
-\subparagraph{Signature verification operation}
-\begin{table}[ht]
+\par\vspace{0.5cm}
+\textbf{Signature verification operation}
+\par\vspace{0.5cm}
+\begin{minipage}[t]{0.8\textwidth}
     \begin{tabular}{lll}
         Input & $(n, e)$ & Public Key der signierenden Partie \\
-         & $M$ & Nachricht \\
+        & $M$ & Nachricht \\
         Output & & valide/invalide Signatur
     \end{tabular}
-    % \caption{<+Caption text+>}
-    % \label{tab:<+label+>}
-\end{table}
+\end{minipage}
+\par\vspace{0.5cm}
 
 \textbf{Schritte:}
 \begin{enumerate}
@@ -450,21 +451,19 @@ berechnet und mit dem Hashwert welcher in der Signatur enthalten ist verglichen.
 
 Die Abbildung~\ref{fig:emsa-pss-encoding} illustriert das EMSA-PSS-ENCODING.
 
-\begin{figure}[ht]
+\begin{minipage}[t]{0.8\textwidth}
     \centering
     \includegraphics[scale=0.48]{images/emsa-pss-encoding}
-    \caption{EMSA-PSS-ENCODING. \small{Quelle: PKCS \#1}}
+    \captionof{figure}{EMSA-PSS-ENCODING. \small{Quelle: PKCS \#1}}
     \label{fig:emsa-pss-encoding}
-\end{figure}
-
-\FloatBarrier
+\end{minipage}
 
 \subsection{PKCS \#3: Diffie-Hellman Key-Agreement Standard}
 
 \subsubsection{Einleitung}
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|l|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 1.4 \\\hline
         Datum & Revised November 1, 1993 \\\hline
         Seitenzahl & 8 \\\hline
@@ -686,7 +685,7 @@ Die beiden Operationen werden hier etwas vereinfach beschrieben:
 \subsubsection{Einleitung}
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|l|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 1.5 \\\hline
         Datum & 1. November 1993 \\\hline
         Seitenzahl & 11 \\\hline
@@ -1095,15 +1094,15 @@ Für \texttt{naturalPerson} sind die folgenden Attribute definiert:
         unstrukturierten ASCII Zeichenkette. Es liegt an der Anwendung, die Adressen zu
         interpretieren. Speziell an diesem Element ist die \texttt{EQUALITY MATCHING RULE}
         als \texttt{pkcs9CaseIgnoreMatch}, welche besagt, dass falls zwei E-Mail Adressen
-        miteinander verglichen werden, wird die Gross-Kleinschreibung ignoriert.
+        miteinander verglichen werden, wird die Gross- Kleinschreibung ignoriert.
     \item[unstructuredName] spezifiziert den oder die Namen eines Subjektes als
         unstrukturierte ASCII Zeichenkette. Ein unstrukturierter Name kann mehrere
         Attribut-Werte enthalten, es liegt auch hier an der Anwendung, den Namen zu
         interpretieren. Wie bei der E-Mail Adresse wird beim Vergleich zweier
-        unstrukturierter Adressen die Gross-Kleinschreibung ignoriert.
+        unstrukturierter Adressen die Gross- Kleinschreibung ignoriert.
     \item[unstructuredAddress] nennt die Adresse des Subjektes. Auch hierbei handelt es
         sich um vollkommen unstrukturierten Inhalt. Auch hier gilt, dass beim Vergleich
-        die Gross-Kleinschreibung ignoriert wird. Wie der Name kann auch die Adresse
+        die Gross- Kleinschreibung ignoriert wird. Wie der Name kann auch die Adresse
         mehrere Attribut-Werte enthalten und es liegt an der Anwendung, diesen Inhalt zu
         interpretieren.
     \item[dateOfBirth] wird in Form der \texttt{GeneralizedTime} geführt. Es wird ferner
@@ -1111,7 +1110,7 @@ Für \texttt{naturalPerson} sind die folgenden Attribute definiert:
         TRUE}).
     \item[placeOfBirth] darf wie \texttt{dateOfBirth} maximal einmal vorkommen und nennt
         in einem unstrukturierten Text den Geburtsort des Subjektes. Der Geburtsort wird
-        allerdings unter Berücksichtigung der Gross-Kleinschreibung behandelt.
+        allerdings unter Berücksichtigung der Gross- Kleinschreibung behandelt.
     \item[gender] nennt das Geschlecht mittels "`F"', "`f"', "`M"' oder "`m"'. Dieses
         Attribut darf ebenfalls maximal einmal vorkommen.
     \item[countryOfCitizenship] zählt alle Staatsangehörigkeiten des Subjektes auf,
@@ -1123,14 +1122,14 @@ Für \texttt{naturalPerson} sind die folgenden Attribute definiert:
         hinterlegt.
     \item[pseudonym] spezifiziert ein Pseudonym des Subjektes. Neben einer ID enthält es
         das Pseudonym als Zeichenkette, welches unter Berücksichtigung der
-        Gross-Kleinschreibung behandelt wird.
+        Gross- Kleinschreibung behandelt wird.
     \item[serialNumber] Auf dieses Attribut wird nicht eingegangen, es ist definiert in
         ISO/IEC 9594-6.
 \end{description}
 
 \subsubsection{Generelle Attribute}
 
-Neben der beiden neu definierten Objekt-Klassen \texttt{pkcsEntity} und
+Neben der beiden neu definierten Objekt-Klassen \texttt{pkcsEntity} und \\
 \texttt{naturalPerson} wird im Besonderen auf einige spezifische Attribute eingegangen.
 Von diesen sollen nun einige genauer betrachtet werden:
 
@@ -1155,7 +1154,7 @@ Von diesen sollen nun einige genauer betrachtet werden:
     \item[counterSignature] erlaubt es, eine Signatur zu signieren. Das Attribut hat
         dieselbe Bedeutung wie \texttt{SignerInfo}~\cite[S.12]{pkcs7}, ausser:
         \begin{itemize}
-            \item Das Feld \texttt{authenticatedAttributes} muss ein Attribut
+            \item Das Feld \texttt{authenticatedAttributes} muss ein Attribut \\
                 \texttt{messageDigest} aufweisen, falls es irgendwelche andere Attribute
                 aufweist.
             \item Der Inhalt des Message Digest ist der Inhalt des \texttt{signatureValue}
@@ -1168,7 +1167,7 @@ Von diesen sollen nun einige genauer betrachtet werden:
     \item[challengePassword] spezifiziert ein Passwort, mit welchem eine Entität die
         Annullierung eines Zertifikates verlangen kann. Die Interpretation des Inhaltes
         ist wiederum der Anwendung überlassen, er wird jedoch unter Berücksichtigung von
-        Gross-Kleinschreibung verglichen. Es wird bemerkt, dass der Inhalt als
+        Gross- Kleinschreibung verglichen. Es wird bemerkt, dass der Inhalt als
         \texttt{PrintableString} encodiert werden soll, falls Internationalisierung dies
         nicht ermöglicht, sollte stattdessen \texttt{UTF8String} verwendet werden.
 \end{description}
@@ -1179,12 +1178,11 @@ Von diesen sollen nun einige genauer betrachtet werden:
 
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|p{7.2cm}|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 1.7 \\\hline
         Datum & 26. Mai 2000 \\\hline
         Seitenzahl & 10 \\\hline
     \end{tabular}
-    \caption{Eigenschaften des Standards PKCS \#10}
     \label{tab:pkcs-10-properties}
 \end{table}
 
@@ -1240,7 +1238,7 @@ Die Informationen zur Anfrage bestehen aus dem eindeutigen Namen der Anfragestel
         Anfragestelle) erstellt.
     \item Der Wert von \texttt{CertificationRequestInfo} wird mit dem privaten Schlüssel
         der Anfragestelle signiert.
-    \item Die oben genannten drei Bestandteile werden in den Datentyp
+    \item Die oben genannten drei Bestandteile werden in den Datentyp \\
         \texttt{CertificationRequest} zusammengeführt.
 \end{enumerate}
 
@@ -1332,7 +1330,7 @@ SignatureAlgorithms ALGORITHM ::= {
 \subsubsection{Einleitung}
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|p{7.2cm}|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 2.2 \\\hline
         Datum & 16. April 2009 \\\hline
         Seitenzahl & - \\\hline
@@ -1464,7 +1462,8 @@ sind nur möglich, wenn der normale Benutzer vom Security Officer authentifizier
 
 \subparagraph{Beenden der Verbindung}
 Benötigt das Anwendunsprogramm das kryptografische Gerät nicht mehr, kann die Verbindung
-durch Aufrufen von \texttt{C\_Finalize()} beendet werden.
+durch Aufrufen von \\
+\texttt{C\_Finalize()} beendet werden.
 
 \subparagraph{Funktionsumfang}
 Zwischen dem Erstellen der Sessions und dem Aufruf von \texttt{C\_Finalize()} kann das
@@ -1485,7 +1484,7 @@ zwingend mit jedem kryptografischen Gerät zur Verfügung.
 
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|l|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 1.1 \\\hline
         Datum & 27.10.2012 \\\hline
         Seitenzahl & 23 \\\hline
@@ -1548,7 +1547,7 @@ privacy/integrity Modi eingesetzt werden:
             \item Public-key integrity Modus (Digitale Signatur mittels privatem Schlüssel
                 des Senders. Wird beim Empfänger mit dem öffentlichen Schlüssel des
                 Senders verifiziert.)
-            \item Password integrity Modus (MAC abgeleitet aus einem geheimen
+            \item Password integrity Modus (MAC abgeleitet aus einem geheimen \\
                 Integritäts-Passwort)
         \end{itemize}
 \end{itemize}
@@ -1693,7 +1692,7 @@ Encryption Schemes und Point Representations nennt.
 \subsubsection{Einleitung}
 \begin{table}[ht]
     \centering
-    \begin{tabular}{|l|l|} \hline
+    \begin{tabular}{|l|p{6.4cm}|} \hline
         Aktuelle Version des Standards & 1.1 \\\hline
         Datum & 16.05.2000 \\\hline
         Seitenzahl & 81 \\\hline
@@ -1722,8 +1721,8 @@ Allerdings ist dieser PKCS Standart veraltet und wird durch ISO/IEC 7816-15 abge
         Platformen laufen
     \item Produkte Unabhängigkeit (Verschiedenen Produkte verschiedener Hersteller können
         problemlos verwendent werden.)
-    \item Applikationsunabhängigkeit (Es muss keine extra Applikations-Level-Software
-        geschrieben werden um die Kompabilität zu gewährleisten.)
+    \item Applikationsunabhängigkeit (Es muss keine extra Applikations-Level-\\
+        Software geschrieben werden um die Kompabilität zu gewährleisten.)
     \item Konsistenz von bestehender, verwendeter Standarts erhalten und diese wenn nötig
         weiter entwickeln
 \end{itemize}
@@ -1769,7 +1768,7 @@ Beispiel aus der offiziellen RSA Dokumentation zu PKCS\#15:
 \subparagraph{Anforderungen}
 
 \paragraph{Private Schlüssel}
-Es braucht mindestens 2 private Schlüssel in einem PKCS\#15-Token. Davon wird ein Schlüssel
+Es braucht mindestens 2 private Schlüssel in einem \\PKCS\#15-Token. Davon wird ein Schlüssel
 sowohl für die Authorisierung wie auch Verschlüsselung benötigt. Der zweite Schlüssel wird
 exklusiv für die Nachweisbarkeit oder für Digitale-Signatur verwendet.
 
@@ -1807,13 +1806,18 @@ Nachweisbarkeit, den Verfizierungsstatus auf "`nicht verifiziert"' setzen.
     \bibitem[PKCS1]{pkcs1} RSA Laboratories: PKCS\#1,
         \url{ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-1/pkcs-1v2-1.pdf}
     \bibitem[PKCS3]{pkcs3} RSA Laboratories: PKCS \#3; Diffie-Hellman Key-Agreement
-        Standard, 1193
+        Standard, 1993
+    \bibitem[PKCS5]{pkcs5} RSA Laboratories: PKCS \#5; Password-Based Cryptography
+        Standard Standard, 2000 (\url{http://www.ietf.org/rfc/rfc2898.txt})
     \bibitem[PKCS6]{pkcs6} RSA Laboratories: PKCS \#6; Extended- Certificate Syntax
         Standard,
         \url{http://www.emc.com/emc-plus/rsa-labs/standars-initiatives/pkcs-6-extended-certificate-syntax-standard.htm},
         1.1.2014
     \bibitem[PKCS7]{pkcs7} RSA Laboratories: PKCS \#7 Cryptographic Message Syntax Standard;
         1993
+    \bibitem[PKCS8]{pkcs8} RSA Laboratories: PKCS \#8 Private-Key Information Syntax
+        Specification Version 1.2, May 2008, \url{http://www.ietf.org/rfc/rfc5208.txt},
+        1.1.2014
     \bibitem[PKCS9]{pkcs9} RSA Laboratories: PKCS \#9 v2.0; Selected Object Classes and
         Attribute Types; 2000
     \bibitem[PKCS10]{pkcs10} RSA Laboratories: PKCS \#10; Certification Request Syntax
