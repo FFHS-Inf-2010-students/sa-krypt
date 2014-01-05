@@ -144,9 +144,11 @@ Die Gruppe der an dieser Arbeit mitwirkenden Studenten umfasst:
    \label{tab:weitere-aufgaben}
 \end{table}
 
+\FloatBarrier
+
 \section{Public-Key Cryptography Standards}
 Die Public Key Cryptography Standards (PKCS) sind eine von RSA Laboratories~\cite{rsa-lab}
-seit den 1990er- Jahren veröffentlichte Reihe an Standards zum Themengebiet der
+seit den 1990er-Jahren veröffentlichte Reihe an Standards zum Themengebiet der
 asymmetrischen Kryptographie (Public-Key Kryptographie).
 
 Die Gruppe der PKCS besteht aus den nachfolgend aufgelisteten Standards, welche in diesem
@@ -573,7 +575,7 @@ Zudem werden in diesem PKCS die Domain Werte, also Primzahl p sowie eine Primiti
 nicht von den beiden Kommunikationsparteien sondern von einer zentralen Authorität
 gewählt.
 
-\subsection{PKCS \#5}
+\subsection{PKCS \#5: Password-Based Cryptography Standard}
 PKCS Dokument \#5 gibt Empfehlungen für die Implementierung von Passwort basierter
 Kryptografie. Passwörter sind nicht direkt als Schlüssel verwendbar und müssen deshalb
 angepasst werden, um als solchen verwendet werden zu können. Bei dieser Umwandlung in
@@ -679,7 +681,7 @@ Die beiden Operationen werden hier etwas vereinfach beschrieben:
     \item Bei Übereinstimmung ist der Output "`correct"', ansonsten "`incorrect"'
 \end{enumerate}
 
-\subsection{PKCS \#6 Extended-Certificate Syntax Standard}
+\subsection{PKCS \#6: Extended-Certificate Syntax Standard}
 
 \subsubsection{Einleitung}
 \begin{table}[ht]
@@ -703,7 +705,7 @@ Die beiden Operationen werden hier etwas vereinfach beschrieben:
 \subsubsection{Zusammenfassung}
 
 \paragraph{Was beschreibt der Standard?}
-Das Dokument beschreibt einen Syntax für «extended certificates» (Erweiterte Zertifikate).
+Das Dokument beschreibt einen Syntax für "`extended certificates"' (Erweiterte Zertifikate).
 
 Ein erweitertes Zertifikat ist ein X.509 Public-Key-Zertifikat und eine Menge von
 Attributen, welche zusammen vom Aussteller des Zertifikats signiert werden.
@@ -721,7 +723,7 @@ beschrieben, wobei weitere Anwendungen erwartet werden~\cite[S.1]{pkcs6}.
 Die Standarddokumentation nennt vier Gründe für die Verwendung von erweiterten
 Zertifikaten:
 \begin{enumerate}
-    \item Änderungen an der X.509-Zertifikat-Syntax "`are easily followed"'
+    \item Änderungen an der X.509-Zertifikat-Syntax können einfach übernommen werden
     \item Das X.509-Zertifikat kann einfach aus dem erweiterten Zertifikat exportiert
         werden
     \item Sowohl das erweiterte Zertifikat, wie auch das darin enthaltene X.509-Zertifikat
@@ -820,7 +822,7 @@ Signature ::= BIT STRING
         Ausgabestelle
 \end{enumerate}
 
-\subsection{PKCS \#7 - Standard zur Syntax kryptographischer Nachrichten}
+\subsection{PKCS \#7: Standard zur Syntax kryptographischer Nachrichten}
 
 \begin{description}
     \item[PKCS \#7] definiert eine generelle Syntax zur Beschreibung von Inhalten welche in
@@ -977,7 +979,7 @@ ist eher dazu gedacht, für lokale Verschlüsselung verwendet zu werden. Der Typ
 lediglich eine Version und den verschlüsselten Inhalt wie er Bestandteil des enveloped
 content type ist (Syntax \ref{syntax:enveloped}, \texttt{EncryptedContentInfo}).
 
-\subsection{PKCS \#8}
+\subsection{PKCS \#8: Private-Key Information Syntax Standard}
 Der Standard in PKCS \#8 beschreibt die Syntax um Private Key Informationen zu speichern.
 Dies kann sowohl unverschlüsselt als auch verschlüsselt geschehen (z.Bsp. mit den in PKCS
 \#5 beschriebenen Algorithmen). Wie in allen PKCS Dokumenten wird zur Beschreibung der
@@ -1030,7 +1032,7 @@ EncryptedData ::= OCTET STRING
         Abschnitt~\ref{sec:private-key-info})
 \end{description}
 
-\subsection{PKCS \#9 - Ausgewählte Objektklassen und Attribute}
+\subsection{PKCS \#9: Ausgewählte Objektklassen und Attribute}
 In PKCS\#9 werden einige Objektklassen und Attribute behandelt, welche Bestandteile
 anderer PKCS Dokumente sind und von unterschiedlichen Dokumenten gleichermassen
 referenziert werden.
@@ -1444,10 +1446,10 @@ einem Token kommunizieren müssen, um bspw. dessen kryptografischen Funktionen z
 
 Aus Sicht von Cryptoki ist ein Anwendungsprogramm ein einzelner Adressraum, inkl. aller
 darin laufenden Threads. Durch den Aufruf der Cryptoki-Funktion \texttt{C\_Initialize()}
-(innerhalb eines Threads des Adressraums, wird die Applikation zu einer
+innerhalb eines Threads des Adressraums, wird die Applikation zu einer
 "`Cryptoki-Applikation"'. Diese Sicht von Cryptoki bedeutet, dass ein mit \texttt{fork()}
 gestarteter Kindprozess keinen Zugriff auf Tokens hat, solang er nicht selbst einen Aufruf
-von \texttt{C\_Initialize()} macht.)
+von \texttt{C\_Initialize()} macht.
 
 \subparagraph{Sessions}
 Um auf die Objekte und Funktionen eines an einem Slot angehängten Geräts zugreifen zu
@@ -1625,7 +1627,7 @@ SafeBag ::= SEQUENCE {
 }
 \end{verbatim}
 
-\subsection{PKCS \#13 - Elliptische Kurven}
+\subsection{PKCS \#13: Elliptische Kurven}
 
 Die Kryptographie mit elliptischen Kurven erfährt eine zunehmende Popularität, da eine
 vergleichbare Sicherheit zu etablierten Public Key Verfahren mit kleineren Schlüsseln
