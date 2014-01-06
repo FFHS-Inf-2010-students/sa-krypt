@@ -599,7 +599,7 @@ Message Authentication definiert obwohl auch andere Verwendungszwecke denkbar w�
 
 \subsubsection{Salt und Wiederholungszähler}
 Der Salt dient dazu für ein einzelnes Passwort eine grosse Menge von möglichen Keys
-generieren zu können. Bei einem 64 Bit langen Salt gibt es also für jedes Passwort $2^64$
+generieren zu können. Bei einem 64 Bit langen Salt gibt es also für jedes Passwort $2^{64}$
 verschiedene Keys. Zudem ist es unwahrscheinlich, dass für das selbe Passwort zwei mal
 derselbe Key generiert wird.
 
@@ -614,12 +614,12 @@ Für neuere Applikationen wird PBKDF2 empfohlen, weshalb hier die PBKDF1 ausser 
 gelassen wird. Grob zusammengefasst funktioniert PBKDF2 folgendermassen.
 \begin{enumerate}
     \item Der abgeleitete Schlüssel wird in einzelne Blöcke unterteilt
-    \item 2. Für jeden Block wird eine Pseudozufalls Funktion mehrere Male ausgeführt
+    \item Für jeden Block wird eine Pseudozufalls Funktion mehrere Male ausgeführt
         (Anzahl gemäss Wiederholungszähler) und mit dem vorherigen Resultat der Funktion
         XORed. Input der Funktion bei der ersten Ausführung ist das Passwort, der Salt
         sowie die Nummer des Blocks (siehe Schritt 1). Bei allen weiteren Ausführungen das
         Passwort und das Resultat der letzten Iteration.
-    \item 3. Am Schluss werden die einzelnen Blöcke zusammengesetzt und das ist dann der
+    \item Am Schluss werden die einzelnen Blöcke zusammengesetzt und das ist dann der
         abgeleitete Schlüssel.
 \end{enumerate}
 
